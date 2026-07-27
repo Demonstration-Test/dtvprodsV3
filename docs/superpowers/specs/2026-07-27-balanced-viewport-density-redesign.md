@@ -1,7 +1,7 @@
 # Damon V3 Balanced Viewport Density Redesign
 
-Date: 2026-07-27  
-Status: Approved design, revised after independent written-spec review  
+Date: 2026-07-27
+Status: Approved design, revised after independent written-spec review
 Target: Damon V3 homepage and all supporting routes
 
 ## 1. Objective
@@ -379,8 +379,8 @@ Test at minimum:
 
 Verify:
 
-- Hero fills the visible viewport.
-- Each homepage chapter fits the available viewport at normal text scale.
+- At viewports meeting the 620px desktop or 560px mobile available-height threshold, the Hero and every homepage chapter fit the visible chapter viewport at normal text scale.
+- At the `1280 × 650` short-desktop and `844 × 390` landscape test sizes, chapters may grow naturally, but content must not clip, overlap the header or booking bar, create an internal scroll trap, or cause horizontal overflow.
 - No horizontal overflow, clipped controls, or broken images.
 - Side navigation moves to the requested chapter and updates active state.
 - Story selectors update image and content.
