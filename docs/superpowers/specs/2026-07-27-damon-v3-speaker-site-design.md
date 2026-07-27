@@ -79,6 +79,8 @@ Content priority:
 3. Verified current content from `dtvprods.com`
 4. Newly written copy limited to the approved positioning and themes
 
+Appendix A is the versioned implementation source for approved public copy, form fields, FAQ answers, calls to action, and external links. Components must import that content from typed project data derived from Appendix A; they must not fetch mutable website copy at runtime.
+
 The live DTV site currently supports the following facts for the demo:
 
 - Damon J. Young Jr. founded DTV Productions LLC.
@@ -121,10 +123,13 @@ The curated `Website Assets` library is the primary Drive source. Broader client
 
 Before interface implementation begins:
 
-1. Produce an individual media manifest with stable media IDs.
-2. Record source, use, route, section, authenticity, approval, rights status, crop, focal point, alt text, and optimization needs.
-3. Create responsive derivatives and abstract generated assets.
-4. Obtain user approval of the final manifest.
+1. Produce a draft individual media manifest with stable media IDs.
+2. Record source, proposed use, route, section, authenticity, rights and approval status, crop, focal point, alt text, and optimization needs.
+3. Obtain user approval of the draft manifest and proposed uses.
+4. Create responsive derivatives and abstract generated assets only for approved entries.
+5. Update the manifest with derivative IDs, optimization details, and generated-asset provenance.
+6. Obtain user approval of the finished asset set and final manifest.
+7. Begin interface implementation.
 
 Generated assets may include abstract lens interiors, light, grain, dust, reflections, focus marks, viewfinder lines, and social graphics. They may not include human likenesses or fabricated documentary scenes.
 
@@ -217,7 +222,7 @@ The Audiences item is an accessible dropdown on desktop and an expandable group 
 7. Approved speaking themes
 8. Destined to Venture origin story
 9. Curated visual storytelling portfolio
-10. Credible audience outcomes
+10. Intended audience takeaways and organizer goals
 11. Workshops and coaching
 12. Three-step booking process
 13. FAQ preview
@@ -244,6 +249,7 @@ The page alternates dense image-led sequences with calm reading sections. It mus
 - Coaching
 - Portfolio projects
 - Motion-story frames
+- Intended takeaways
 - FAQs
 - Booking fields and options
 - SEO metadata
@@ -265,7 +271,7 @@ Copy and media metadata must not be scattered through animation components.
 - `SpeakingThemeRail`
 - `DtvTimeline`
 - `EditorialPortfolio`
-- `OutcomeSection`
+- `IntendedTakeaways`
 - `WorkshopFeature`
 - `BookingProcess`
 - `InquiryForm`
@@ -365,17 +371,19 @@ Collect:
 
 ### Full booking inquiry
 
-Collect the approved organizer fields from the brief, including audience, format, dates, location, size, objectives, challenges, optional budget, travel expectations, referral source, and additional information.
+Collect the exact organizer fields listed in Appendix A, including audience, format, dates, location, size, objectives, challenges, optional budget, travel expectations, referral source, and additional information.
 
 ### Data flow
 
 1. React Hook Form captures the input.
 2. Zod validates and returns inline messages plus an accessible error summary.
-3. Valid values are encoded into a readable `mailto:` draft addressed to `Bookings@dtvprods.com`.
-4. The visitor's email client opens.
-5. The site may navigate to `/thank-you` only with language that says the inquiry is not sent until the visitor sends the email.
+3. The confirmation view presents a readable inquiry summary for review before any external action.
+4. When the encoded `mailto:` URI is no longer than 1,800 characters, the visitor may choose **Open email draft**. The browser only attempts to hand the URI to a configured mail application; the site never claims that an application opened or that a message was sent.
+5. When the URI would exceed 1,800 characters, or when the visitor reports that nothing opened, the site presents **Copy inquiry summary** and a plain email link to `Bookings@dtvprods.com`. The copy action has a manual-selection fallback when Clipboard API access fails.
+6. The page always displays the exact disclosure and consent language from Appendix A.
+7. `/thank-you` appears only after the visitor explicitly selects **I sent my email**. Its content repeats that this static website cannot verify delivery and provides the phone number and email address for follow-up.
 
-No fake network request, success toast, or completion analytics event will be emitted merely because the mail client opened.
+No fake network request, success toast, automatic redirect, or completion analytics event will be emitted because the site attempted to open a mail client. `inquiry_mailto_attempted`, `inquiry_summary_copied`, and `inquiry_user_marked_sent` are distinct events.
 
 ## 14. Analytics interface
 
@@ -391,6 +399,8 @@ No external analytics script is loaded. A first-party event bridge emits documen
 - Inquiry start
 - Inquiry validation error
 - Mail-draft creation
+- Inquiry-summary copy
+- User-marked-sent confirmation
 - Social links
 
 The interface is ready for a future privacy-approved analytics provider without changing the UI components.
@@ -402,9 +412,12 @@ Target WCAG 2.2 AA:
 - Semantic landmarks
 - Logical heading hierarchy
 - Skip link
+- Route changes update the document title, move focus to the route's main heading, and announce the new page through a polite live region.
 - Accessible dropdown and mobile navigation
 - Visible focus indicators
+- The native cursor remains visible whenever the custom cursor is disabled, unavailable, or loses synchronization.
 - Touch targets of at least 44 by 44 CSS pixels
+- Sticky booking controls reserve safe-area and content spacing so they never cover fields, links, or the footer.
 - Meaningful alt text
 - No important text embedded only in images
 - Keyboard-operable carousels or step controls
@@ -415,6 +428,7 @@ Target WCAG 2.2 AA:
 - Pause controls for moving content
 - Transcript-style text for the motion story
 - No information conveyed only through animation
+- One global motion-preference state controls GSAP, Framer Motion, Lenis, Three.js, cursor effects, autoplay behavior, and CSS animation. Individual components may not override a user's reduced-motion preference.
 
 ## 16. SEO and route metadata
 
@@ -428,6 +442,12 @@ Every route receives:
 - Internal links
 - Breadcrumbs on supporting pages
 - Descriptive media filenames and alt text
+
+The production origin is:
+
+`https://demonstration-test.github.io/dtvprodsV3/`
+
+Canonical URLs, Open Graph URLs, social images, structured-data URLs, `sitemap.xml`, and `robots.txt` use that exact origin plus the canonical trailing-slash route. Development builds use a separate local origin and must never emit localhost into production artifacts.
 
 Static output includes:
 
@@ -451,17 +471,43 @@ Structured data is limited to visible, verified content:
 - Lazy-load below-the-fold images and motion-story assets.
 - Route-split supporting pages.
 - Pause animation calculations when hidden or offscreen.
-- Cap WebGL device pixel ratio.
+- Keep critical JavaScript before lazy animation bundles at or below 190 KB gzip.
+- Keep total homepage JavaScript at or below 500 KB gzip.
+- Keep each supporting route's incremental JavaScript at or below 120 KB gzip.
+- Keep the initial mobile hero image at or below 350 KB and the desktop hero image at or below 700 KB.
+- Target LCP at or below 2.5 seconds, CLS at or below 0.1, and INP at or below 200 milliseconds at the 75th percentile.
+- Cap WebGL device pixel ratio at 1.5 by default and 2 only on high-capability desktops.
 - Use low-power and small-screen fallbacks.
 - Avoid layout shifts.
 - Keep third-party scripts at zero for the demo.
 - Avoid shipping uncompressed source images.
 
+Use the static lens/viewfinder fallback when any of these are true:
+
+- `prefers-reduced-motion: reduce`
+- Save-Data is enabled
+- Viewport width is below 768 CSS pixels
+- `navigator.deviceMemory` is available and reports 4 GB or less
+- `navigator.hardwareConcurrency` is available and reports 4 logical processors or fewer
+- WebGL context creation fails or the context is lost
+
+If a device API is unavailable, that missing signal alone does not disable WebGL. Runtime long tasks or repeated context loss permanently disable the hero's heavy effects for the current page view.
+
 ## 18. GitHub Pages architecture
 
 The application uses React, Vite, TypeScript, Tailwind CSS, React Router, GSAP/ScrollTrigger, Three.js, Lenis, Framer Motion, React Hook Form, and Zod.
 
-The Vite base path is `/dtvprodsV3/`. The production build creates a real static entry for every route so direct links return the application correctly under GitHub Pages. Asset URLs and canonical route metadata use the repository base path where required.
+The Vite base path is `/dtvprodsV3/`. React Router uses browser history with basename `/dtvprodsV3`. Canonical route URLs end with `/`.
+
+After the Vite build, a deterministic route-generation script writes the built application shell to each approved path as `<route>/index.html`. For each output, it injects that route's unique title, description, canonical URL, Open Graph fields, and structured data from the typed route-content registry. The runtime router resolves the current pathname after stripping the basename. `404.html` is a genuine not-found page with a home link; it is not the primary routing mechanism and does not disguise failed routes.
+
+Direct requests and reloads must return working pages for:
+
+- `https://demonstration-test.github.io/dtvprodsV3/`
+- `https://demonstration-test.github.io/dtvprodsV3/about/`
+- Every other approved route using the same trailing-slash convention
+
+Asset URLs use `import.meta.env.BASE_URL` or imported module URLs. No leading-root asset path may bypass the repository base path.
 
 A GitHub Actions workflow:
 
@@ -489,6 +535,7 @@ Automated verification:
 - TypeScript
 - Production build
 - Route-generation assertions
+- Direct-load and reload checks for every generated GitHub Pages route
 - Unit tests for content, analytics events, and form schemas
 - Broken-link and asset-path checks
 - Route metadata checks
@@ -501,6 +548,7 @@ Rendered verification:
 - Touch-sized controls
 - Reduced-motion mode
 - WebGL fallback
+- Sticky CTA overlap checks at narrow heights and safe-area insets
 - Missing-media fallback
 - Inquiry validation and mailto composition
 - Console errors and warnings
@@ -513,10 +561,269 @@ The final handoff is blocked until the accepted design concepts and the latest b
 
 1. Written design specification approved.
 2. Implementation plan approved.
-3. Individual media manifest approved.
-4. Generated abstract assets and responsive media derivatives approved.
+3. Draft individual media manifest and proposed uses approved.
+4. Responsive derivatives, abstract assets, and final media manifest approved.
 5. Complete design concepts approved.
-6. Local implementation verified.
-7. Git commit and push complete.
-8. GitHub Pages deployment verified at the live URL.
+6. Interface implementation begins.
+7. Local implementation verified.
+8. Git commit and push complete.
+9. GitHub Pages deployment verified at the live URL.
 
+## Appendix A — Approved implementation copy and fields
+
+This appendix is the versioned source for the initial demo. Typography may change line breaks, but wording changes require content-data updates and review.
+
+### Hero
+
+Label:
+
+> MOTIVATIONAL SPEAKER • ENTREPRENEUR • VISUAL STORYTELLER
+
+Headline:
+
+> DESTINED  
+> TO VENTURE.
+
+Supporting copy:
+
+> Damon J. Young Jr. challenges students, athletes, creators, entrepreneurs, and organizations to move beyond hesitation, develop their vision, and take the next meaningful step toward what they are capable of building.
+
+Primary action:
+
+> BOOK DAMON TO SPEAK
+
+Secondary action:
+
+> WATCH HIS STORY
+
+Text action:
+
+> EXPLORE DTV PRODUCTIONS
+
+### Manifesto
+
+Statement:
+
+> YOU DO NOT HAVE TO  
+> SEE THE ENTIRE ROAD  
+> TO TAKE THE NEXT STEP.
+
+Definition:
+
+> Destined to Venture is the decision to move before every answer is available—to take intentional risks, develop discipline behind a vision, turn creative ability into opportunity, and grow beyond the identity or environment that once defined you.
+
+### Audience pathways
+
+Schools and Colleges:
+
+> Helping students recognize possibility, build confidence, and act on their ideas.
+
+Action:
+
+> BRING DAMON TO YOUR SCHOOL
+
+Athletes and Teams:
+
+> Connecting preparation, discipline, identity, pressure, and performance beyond the game.
+
+Action:
+
+> BOOK DAMON FOR YOUR TEAM
+
+Creatives and Entrepreneurs:
+
+> Helping creators move from talent and ideas into disciplined execution.
+
+Action:
+
+> PLAN A CREATIVE WORKSHOP
+
+Organizations and Brands:
+
+> Encouraging teams to approach change, opportunity, ownership, and innovation with intention.
+
+Action:
+
+> INVITE DAMON TO YOUR ORGANIZATION
+
+### Speaking themes
+
+- Destined to Venture
+- Start Before You Feel Ready
+- From Vision to Execution
+- Discipline Behind the Dream
+- Turning a Skill Into a Business
+- Identity Beyond the Uniform
+- What the Lens Taught Me About Leadership
+
+The shared disclaimer beneath theme listings is:
+
+> These are customizable speaking themes, not fixed keynote packages. Damon reviews each audience, event, and objective before recommending the right message and format.
+
+### Intended takeaways
+
+Heading:
+
+> WHAT IS THE EXPERIENCE DESIGNED TO SPARK?
+
+Introductory copy:
+
+> Every engagement begins with the organizer's goals. Depending on the audience and format, the experience can be designed to encourage:
+
+- Greater confidence in taking a meaningful next step
+- A clearer understanding of purposeful risk
+- Practical movement from an idea toward a plan
+- A stronger connection between discipline and opportunity
+- A healthier perspective on failure and uncertainty
+- Motivation grounded in real entrepreneurial and creative experience
+
+Closing disclaimer:
+
+> These are intended takeaways, not guaranteed individual or organizational outcomes.
+
+### Booking process
+
+Step 1:
+
+> SHARE YOUR VISION
+
+> Tell Damon about the event, audience, date, location, and desired outcome.
+
+Step 2:
+
+> BUILD THE EXPERIENCE
+
+> Damon or his team reviews the request and identifies the right message, format, and level of customization.
+
+Step 3:
+
+> VENTURE TOGETHER
+
+> If the engagement is a fit, the details are confirmed and Damon prepares the keynote, workshop, panel, or creative experience for the room.
+
+### Final call to action
+
+Headline:
+
+> YOU WERE NOT BUILT  
+> TO STAY WHERE YOU STARTED.
+
+Supporting copy:
+
+> Bring Damon J. Young Jr. to your school, team, conference, workshop, or organization for a message designed to challenge hesitation, strengthen vision, and inspire meaningful movement.
+
+Primary action:
+
+> BOOK DAMON TO SPEAK
+
+Secondary action:
+
+> CONTACT DTV
+
+### Homepage inquiry fields
+
+- First name — required, 1–80 characters
+- Last name — required, 1–80 characters
+- Work email — required, valid email, 254 characters maximum
+- Organization — required, 1–120 characters
+- Event type — required
+- Preferred date — required
+- Short message — required, 20–800 characters
+- Consent — required
+
+### Full inquiry fields
+
+- First name — required
+- Last name — required
+- Work email — required
+- Phone — required
+- Organization — required
+- Role or title — required
+- Event type — required
+- Audience type — required
+- Preferred date — required
+- Alternate date — optional
+- Event location — required
+- In-person or virtual — required
+- Estimated audience size — required
+- Requested format — required
+- Desired program length — required
+- Event objectives — required, 20–1,000 characters
+- Primary audience challenges — required, 20–1,000 characters
+- Budget range — optional
+- Travel expectations — optional, 800 characters maximum
+- How the organizer heard about Damon — required
+- Additional information — optional, 1,200 characters maximum
+- Consent — required
+
+Exact consent:
+
+> I understand this demo prepares an email on my device and does not submit, send, or store my information on this website.
+
+Pre-action disclosure:
+
+> Review your inquiry before continuing. This static website cannot send it for you. “Open email draft” asks your browser to open a mail application; you must send the message from that application.
+
+Long-summary fallback:
+
+> This inquiry is too detailed for a reliable email link. Copy the summary below, email it to Bookings@dtvprods.com, and send it from your email account.
+
+`/thank-you` heading and disclosure:
+
+> FINISH YOUR INQUIRY
+
+> This website cannot verify that your email was sent or delivered. If you sent the prepared message, Damon or his team can review it and follow up. If nothing opened, copy your inquiry and email Bookings@dtvprods.com or call 862-846-8626.
+
+### FAQ
+
+**What audiences does Damon speak to?**  
+The demo presents four customizable pathways: schools and colleges, athletes and teams, creatives and entrepreneurs, and organizations and brands. Damon reviews the specific audience before recommending a message or format.
+
+**What topics does Damon cover?**  
+The approved themes include Destined to Venture, purposeful action, vision and execution, discipline, creative entrepreneurship, identity, and leadership through visual storytelling. They are customizable themes rather than fixed packages.
+
+**Does Damon speak at schools and colleges?**  
+Schools and colleges are an approved inquiry pathway. Share the audience, goals, preferred date, and format so Damon or his team can review the opportunity.
+
+**Does Damon offer athletic-team sessions?**  
+Athletes and teams are an approved inquiry pathway focused on preparation, discipline, identity, pressure, and performance beyond the game.
+
+**Can an engagement include photography or visual storytelling?**  
+An organizer may request a photography or visual-storytelling component. Damon or his team confirms whether it is appropriate for the event during engagement planning.
+
+**Does Damon offer workshops?**  
+Organizers may inquire about creative, photography, entrepreneurship, and content-creation workshops. Current format, capacity, duration, and pricing are confirmed after review.
+
+**Is Damon available outside New Jersey?**  
+Geographic availability is not assumed. Include the event location and travel expectations in the inquiry so availability and costs can be reviewed.
+
+**Does Damon offer virtual engagements?**  
+Virtual is an available inquiry option. Damon or his team confirms whether the requested topic and date are a fit for a virtual format.
+
+**How far in advance should an event be booked?**  
+There is no published minimum booking window. Inquire as early as practical and include alternate dates when possible.
+
+**What information is required for an accurate proposal?**  
+Provide the event type, audience, dates, location or virtual format, estimated audience size, requested format, desired length, objectives, primary challenges, and any travel or budget context.
+
+**Can Damon customize a presentation?**  
+Customization begins with the organizer's goals. Damon or his team reviews the request and recommends the message, format, and level of customization.
+
+**Are travel costs included?**  
+Travel costs are not assumed to be included. Any travel requirements and costs are confirmed in the engagement proposal.
+
+**Is a speaker reel available?**  
+This demo includes an authentic photography-led visual story rather than a fabricated speaker reel. Request current speaker materials through the inquiry form.
+
+**Is a media kit available?**  
+Request current media-kit materials through the booking form or by emailing `Bookings@dtvprods.com`.
+
+**Can Damon appear on podcasts and panels?**  
+Podcast, panel, and media invitations are accepted as inquiry types. Include the topic, format, date, audience, and recording or distribution details.
+
+### External links
+
+- DTV Productions: `https://www.dtvprods.com/`
+- Coaching booking: `https://www.dtvprods.com/service-page/1on1-coaching`
+- Email: `mailto:Bookings@dtvprods.com`
+- Phone: `tel:+18628468626`
