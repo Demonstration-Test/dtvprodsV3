@@ -11,13 +11,15 @@
   --signal-red: #ed3e45;
   --line-dark: rgba(244, 240, 232, 0.2);
   --line-light: rgba(8, 8, 8, 0.22);
+  --media-matte: #0d0d0d;
   --shadow-deep: 0 24px 90px rgba(0, 0, 0, 0.32);
   --header-height: 5rem;
   --mobile-header-height: 4.5rem;
   --mobile-booking-height: calc(4rem + env(safe-area-inset-bottom, 0px));
-  --page-gutter: clamp(1.1rem, 4vw, 4rem);
+  --page-gutter: clamp(1.25rem, 6vw, 6rem);
   --section-space: clamp(3.5rem, 6.5vw, 6.5rem);
-  --content-max: 84rem;
+  --content-max: 72rem;
+  --frame-gutter: max(var(--page-gutter), calc((100vw - var(--content-max)) / 2));
   --display-hero: clamp(4.75rem, 9vw, 7.75rem);
   --display-page: clamp(3.5rem, 7vw, 6.75rem);
   --display-section: clamp(2.75rem, 5vw, 4.75rem);

@@ -200,6 +200,243 @@ test("mobile uses native motion and an operable menu", async ({ page }) => {
     .toBe(true);
 });
 
+test("short landscape menu fills the viewport and exposes the complete site map", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1073, height: 427 });
+  await page.goto(siteRoute("/"));
+
+  const trigger = page.getByRole("button", {
+    name: "Open navigation",
+  });
+  await trigger.click();
+
+  const navigation = page.getByRole("navigation", { name: "Mobile" });
+  await expect(navigation).toBeVisible();
+  await expect(navigation.getByRole("link")).toHaveCount(14);
+  await expect
+    .poll(() =>
+      navigation.getByRole("link").allTextContents(),
+    )
+    .toEqual([
+      "Home",
+      "About",
+      "Speaking",
+      "Speaking Topics",
+      "Schools & Colleges",
+      "Athletes & Teams",
+      "Creatives & Entrepreneurs",
+      "Organizations & Brands",
+      "Workshops",
+      "Coaching",
+      "Media",
+      "DTV Story",
+      "FAQ",
+      "Book Damon",
+    ]);
+
+  const geometry = await page.evaluate(() => {
+    const header = document.querySelector(".site-header");
+    const overlay = document.querySelector(".mobile-navigation");
+    const groups = Array.from(
+      document.querySelectorAll(".mobile-navigation__group"),
+    );
+    const headerBox = header?.getBoundingClientRect();
+    const overlayBox = overlay?.getBoundingClientRect();
+    const groupBoxes = groups.map((group) => group.getBoundingClientRect());
+    const centerElement = document.elementFromPoint(
+      window.innerWidth / 2,
+      (headerBox?.bottom ?? 0) + 80,
+    );
+    return {
+      bodyOverflow: document.body.style.overflow,
+      bodyPosition: document.body.style.position,
+      firstColumnLeft: groupBoxes[0]?.left,
+      firstColumnTop: groupBoxes[0]?.top,
+      headerZIndex: Number.parseInt(
+        header ? getComputedStyle(header).zIndex : "0",
+        10,
+      ),
+      mainInert: (
+        document.querySelector("main") as
+          | (HTMLElement & { inert: boolean })
+          | null
+      )?.inert,
+      overlayBottom: overlayBox?.bottom,
+      overlayContainsCenter:
+        overlay instanceof HTMLElement &&
+        centerElement instanceof Node &&
+        overlay.contains(centerElement),
+      overlayTop: overlayBox?.top,
+      pointerZIndex: Number.parseInt(
+        getComputedStyle(
+          document.querySelector(".focus-cursor") ??
+            document.documentElement,
+        ).zIndex || "0",
+        10,
+      ),
+      secondColumnLeft: groupBoxes[1]?.left,
+      secondColumnTop: groupBoxes[1]?.top,
+      headerBottom: headerBox?.bottom,
+    };
+  });
+
+  expect(geometry.overlayTop).toBeCloseTo(geometry.headerBottom ?? 0, 0);
+  expect(geometry.overlayBottom).toBeCloseTo(427, 0);
+  expect(geometry.overlayContainsCenter).toBe(true);
+  expect(geometry.headerZIndex).toBeGreaterThan(geometry.pointerZIndex);
+  expect(geometry.secondColumnLeft).toBeGreaterThan(
+    geometry.firstColumnLeft ?? 0,
+  );
+  expect(geometry.secondColumnTop).toBeCloseTo(
+    geometry.firstColumnTop ?? 0,
+    0,
+  );
+  expect(geometry.bodyOverflow).toBe("hidden");
+  expect(geometry.bodyPosition).toBe("fixed");
+  expect(geometry.mainInert).toBe(true);
+
+  const finalLink = navigation.getByRole("link", {
+    name: "Book Damon",
+  });
+  await finalLink.scrollIntoViewIfNeeded();
+  await expect(finalLink).toBeVisible();
+
+  await page.keyboard.press("Escape");
+  await expect(navigation).toBeHidden();
+  await expect(trigger).toBeFocused();
+  await expect
+    .poll(() =>
+      page.evaluate(() => ({
+        inert: (
+          document.querySelector("main") as
+            | (HTMLElement & { inert: boolean })
+            | null
+        )?.inert,
+        overflow: document.body.style.overflow,
+        position: document.body.style.position,
+      })),
+    )
+    .toEqual({ inert: false, overflow: "", position: "" });
+});
+
+test("mobile menu uses one scrollable column without horizontal overflow", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(siteRoute("/"));
+  await page
+    .getByRole("button", { name: "Open navigation" })
+    .click();
+
+  const navigation = page.getByRole("navigation", { name: "Mobile" });
+  const groupPositions = await navigation
+    .locator(".mobile-navigation__group")
+    .evaluateAll((groups) =>
+      groups.slice(0, 2).map((group) => {
+        const bounds = group.getBoundingClientRect();
+        return { left: bounds.left, top: bounds.top };
+      }),
+    );
+  expect(groupPositions[1].left).toBeCloseTo(groupPositions[0].left, 0);
+  expect(groupPositions[1].top).toBeGreaterThan(groupPositions[0].top);
+
+  const finalLink = navigation.getByRole("link", {
+    name: "Book Damon",
+  });
+  await finalLink.scrollIntoViewIfNeeded();
+  await expect(finalLink).toBeVisible();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          document.documentElement.scrollWidth <=
+          document.documentElement.clientWidth,
+      ),
+    )
+    .toBe(true);
+});
+
+test("desktop compositions share the centered 72rem editorial frame", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto(siteRoute("/"));
+
+  const frame = await page.evaluate(() => {
+    const section = document.querySelector(".home-story");
+    const children = Array.from(section?.children ?? []);
+    const boxes = children.map((child) => child.getBoundingClientRect());
+    const left = Math.min(...boxes.map((box) => box.left));
+    const right = Math.max(...boxes.map((box) => box.right));
+    const headerInner = document.querySelector(".site-header__inner");
+    const headerStyles = headerInner
+      ? getComputedStyle(headerInner)
+      : null;
+    return {
+      contentWidth: right - left,
+      left,
+      leftPadding: Number.parseFloat(
+        headerStyles?.paddingLeft ?? "0",
+      ),
+      rightGap: window.innerWidth - right,
+      rightPadding: Number.parseFloat(
+        headerStyles?.paddingRight ?? "0",
+      ),
+    };
+  });
+
+  expect(frame.contentWidth).toBeLessThanOrEqual(1154);
+  expect(Math.abs(frame.left - frame.rightGap)).toBeLessThanOrEqual(2);
+  expect(Math.abs(frame.leftPadding - frame.rightPadding)).toBeLessThanOrEqual(
+    2,
+  );
+  expect(frame.leftPadding).toBeGreaterThanOrEqual(142);
+});
+
+for (const mediaCase of [
+  ["/", ".home-story__image"],
+  ["/", ".audiences__focus-image"],
+  ["/", ".portfolio__feature-image"],
+  ["/", ".programs__image"],
+  ["/about/", ".page-hero__media img"],
+  ["/dtv-story/", ".page-hero__media img"],
+  ["/media/", ".contact-sheet img"],
+] as const) {
+  test(`primary media ${mediaCase[0]} ${mediaCase[1]} displays in full`, async ({
+    page,
+  }) => {
+    await page.goto(siteRoute(mediaCase[0]));
+    const image = page.locator(mediaCase[1]).first();
+    await image.scrollIntoViewIfNeeded();
+    await expect(image).toBeVisible();
+    await expect
+      .poll(() =>
+        image.evaluate((element) => {
+          const media = element as HTMLImageElement;
+          const bounds = media.getBoundingClientRect();
+          const parentBounds =
+            media.closest(".frame")?.getBoundingClientRect();
+          return {
+            fit: getComputedStyle(media).objectFit,
+            loaded: media.naturalHeight > 0 && media.naturalWidth > 0,
+            withinFrame:
+              parentBounds !== undefined &&
+              bounds.left >= parentBounds.left - 1 &&
+              bounds.right <= parentBounds.right + 1 &&
+              bounds.top >= parentBounds.top - 1 &&
+              bounds.bottom <= parentBounds.bottom + 1,
+          };
+        }),
+      )
+      .toEqual({
+        fit: "contain",
+        loaded: true,
+        withinFrame: true,
+      });
+  });
+}
+
 test("eligible mobile homepage chapters fit the usable viewport", async ({
   page,
 }) => {

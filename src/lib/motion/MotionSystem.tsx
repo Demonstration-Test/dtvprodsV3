@@ -201,7 +201,7 @@ function CinematicReveals() {
 
           gsap.utils
             .toArray<HTMLElement>(
-              ".frame img, .numbered-card, .audience-link-grid article",
+              ".frame, .numbered-card, .audience-link-grid article",
             )
             .forEach((element) => {
               gsap.from(element, {

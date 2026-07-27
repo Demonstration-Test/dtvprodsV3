@@ -13,9 +13,9 @@ describe("balanced responsive scale", () => {
     expect(tokens).toMatch(
       /--mobile-booking-height:\s*calc\(4rem \+ env\(safe-area-inset-bottom,\s*0px\)\)/,
     );
-    expect(tokens).toMatch(/--content-max:\s*84rem/);
+    expect(tokens).toMatch(/--content-max:\s*72rem/);
     expect(tokens).toMatch(
-      /--page-gutter:\s*clamp\(1\.1rem,\s*4vw,\s*4rem\)/,
+      /--page-gutter:\s*clamp\(1\.25rem,\s*6vw,\s*6rem\)/,
     );
     expect(tokens).toMatch(
       /--section-space:\s*clamp\(3\.5rem,\s*6\.5vw,\s*6\.5rem\)/,
@@ -52,6 +52,39 @@ describe("balanced responsive scale", () => {
     );
     expect(sections).toMatch(
       /\.page-hero__media[\s\S]*?max-height:\s*34rem/,
+    );
+  });
+
+  it("centers root compositions inside the approved editorial frame", () => {
+    expect(tokens).toMatch(
+      /--frame-gutter:\s*max\(var\(--page-gutter\),\s*calc\(\(100vw - var\(--content-max\)\) \/ 2\)\)/,
+    );
+    expect(base).toMatch(
+      /\.section\s*\{[\s\S]*?padding-inline:\s*var\(--frame-gutter\)/,
+    );
+    expect(sections).toMatch(
+      /\.site-header__inner[\s\S]*?padding-inline:\s*var\(--frame-gutter\)/,
+    );
+    expect(sections).toMatch(
+      /\.site-footer[\s\S]*?padding-inline:\s*var\(--frame-gutter\)/,
+    );
+    expect(sections).toMatch(
+      /\.hero__content[\s\S]*?max-width:\s*var\(--content-max\)/,
+    );
+  });
+
+  it("shows primary framed photographs in full", () => {
+    expect(base).toMatch(
+      /\.frame\s*\{[\s\S]*?background:\s*var\(--media-matte\)/,
+    );
+    expect(base).toMatch(
+      /\.frame img\s*\{[\s\S]*?object-fit:\s*contain[\s\S]*?object-position:\s*center/,
+    );
+    expect(sections).not.toMatch(
+      /\.(?:home-story__image|audiences__focus-image|portfolio__feature-image|portfolio__preview-image|dtv-story__image)[^{]*\{[^}]*object-fit:\s*cover/,
+    );
+    expect(sections).not.toMatch(
+      /\.page-hero__media img\s*\{[^}]*object-fit:\s*cover/,
     );
   });
 
