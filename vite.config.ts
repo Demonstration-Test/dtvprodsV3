@@ -9,5 +9,6 @@ export default defineConfig({
     target: "es2022",
     cssCodeSplit: true,
     sourcemap: false,
+    chunkSizeWarningLimit: 550,
   },
 });

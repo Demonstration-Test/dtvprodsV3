@@ -1,0 +1,32 @@
+:root {
+  --lens-black: #080808;
+  --film-white: #f4f0e8;
+  --graphite: #171717;
+  --steel: #8c9299;
+  --steel-on-light: #5f646a;
+  --focus-blue: #1657e8;
+  --focus-blue-dark: #1047c5;
+  --dtv-purple: #7b2cbf;
+  --film-amber: #c88a3d;
+  --signal-red: #ed3e45;
+  --line-dark: rgba(244, 240, 232, 0.2);
+  --line-light: rgba(8, 8, 8, 0.22);
+  --shadow-deep: 0 24px 90px rgba(0, 0, 0, 0.32);
+  --header-height: 6.5rem;
+  --page-gutter: clamp(1.25rem, 5vw, 5.25rem);
+  --section-space: clamp(5rem, 10vw, 10rem);
+  --content-max: 96rem;
+  --font-display: "Bebas Neue", Impact, sans-serif;
+  --font-editorial: "Cormorant Garamond", Georgia, serif;
+  --font-body: "Manrope", Arial, sans-serif;
+  --font-mono: "Space Mono", Consolas, monospace;
+  --ease-film: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (max-width: 767px) {
+  :root {
+    --header-height: 5.75rem;
+    --page-gutter: 1.35rem;
+    --section-space: 5.5rem;
+  }
+}
