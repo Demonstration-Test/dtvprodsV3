@@ -15,13 +15,30 @@ async function loadHomePage() {
 }
 
 describe("speaker-first homepage", () => {
-  it("renders the approved hero and complete narrative landmarks", async () => {
+  it("renders exactly the nine approved homepage chapters", async () => {
     const { HomePage } = await loadHomePage();
-    render(
+    const { container } = render(
       <MemoryRouter>
         <HomePage />
       </MemoryRouter>,
     );
+
+    expect(
+      Array.from(
+        container.querySelectorAll<HTMLElement>("[data-home-chapter]"),
+        (chapter) => chapter.id,
+      ),
+    ).toEqual([
+      "home",
+      "story",
+      "audiences",
+      "gallery",
+      "impact",
+      "programs",
+      "plan",
+      "inquire",
+      "book",
+    ]);
 
     expect(
       screen.getByRole("heading", {
@@ -36,14 +53,32 @@ describe("speaker-first homepage", () => {
     bookingLinks.forEach((link) => {
       expect(link).toHaveAttribute("href", "/book-damon");
     });
+  });
+
+  it("removes the superseded manifesto, theme rail, and standalone story sections", async () => {
+    const { HomePage } = await loadHomePage();
+    const { container } = render(
+      <MemoryRouter>
+        <HomePage />
+      </MemoryRouter>,
+    );
+
+    expect(container).not.toHaveTextContent(/PRINCIPLE\s*\/\s*01/i);
+    expect(container).not.toHaveTextContent(
+      /you do not have to see the entire road to take the next step/i,
+    );
+    expect(container).not.toHaveTextContent(
+      /ideas built to move with the room/i,
+    );
+    expect(container).not.toHaveTextContent(/\bIntroduction\b/i);
+    expect(container).not.toHaveTextContent(
+      /from behind the lens to the front of the room/i,
+    );
+    expect(container).not.toHaveTextContent(/\bOrigin story\b/i);
+
     expect(
       screen.getByRole("heading", {
         name: /who is in the frame/i,
-      }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", {
-        name: /ideas built to move with the room/i,
       }),
     ).toBeInTheDocument();
     expect(
@@ -79,6 +114,9 @@ describe("speaker-first homepage", () => {
       </MemoryRouter>,
     );
 
+    await user.click(
+      screen.getByRole("tab", { name: /organizer faq/i }),
+    );
     await user.click(
       screen.getByRole("button", {
         name: /what topics does damon cover/i,

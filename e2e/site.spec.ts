@@ -40,6 +40,30 @@ test("homepage interactions and accessibility stay healthy", async ({
       name: "Destined to Venture.",
     }),
   ).toBeVisible();
+  await expect(page.locator("[data-home-chapter]")).toHaveCount(9);
+  await expect
+    .poll(() =>
+      page
+        .locator("[data-home-chapter]")
+        .evaluateAll((chapters) => chapters.map((chapter) => chapter.id)),
+    )
+    .toEqual([
+      "home",
+      "story",
+      "audiences",
+      "gallery",
+      "impact",
+      "programs",
+      "plan",
+      "inquire",
+      "book",
+    ]);
+  await expect(
+    page.getByText("You do not have to see the entire road"),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("heading", { name: "Speaking themes" }),
+  ).toHaveCount(0);
   await expect
     .poll(() =>
       page.evaluate(
@@ -50,6 +74,13 @@ test("homepage interactions and accessibility stay healthy", async ({
     )
     .toBe(true);
 
+  await page.getByRole("button", { name: "Building the Craft" }).click();
+  await expect(
+    page.getByRole("heading", {
+      name: "Preparation becomes the practice.",
+    }),
+  ).toBeVisible();
+
   await page
     .getByRole("button", { name: "02 Athletes & Teams" })
     .click();
@@ -59,6 +90,16 @@ test("homepage interactions and accessibility stay healthy", async ({
     ),
   ).toBeVisible();
 
+  await page
+    .getByRole("button", { name: "Show Sports / Media Day" })
+    .click();
+  await expect(
+    page.getByRole("button", {
+      name: /View Athlete posing with basketballs/i,
+    }),
+  ).toBeVisible();
+
+  await page.getByRole("tab", { name: "Organizer FAQ" }).click();
   await page
     .getByRole("button", { name: "What topics does Damon cover?" })
     .click();
@@ -72,6 +113,41 @@ test("homepage interactions and accessibility stay healthy", async ({
   );
   expect(seriousIssues).toEqual([]);
   expect(pageErrors).toEqual([]);
+});
+
+test("eligible homepage chapters stay within one balanced viewport", async ({
+  page,
+}) => {
+  await page.goto(siteRoute("/"));
+  await page.locator("img").first().waitFor({ state: "visible" });
+
+  const dimensions = await page
+    .locator("[data-home-chapter]")
+    .evaluateAll((chapters) =>
+      chapters.map((chapter) => ({
+        id: chapter.id,
+        height: chapter.getBoundingClientRect().height,
+      })),
+    );
+
+  expect(dimensions).toHaveLength(9);
+  for (const chapter of dimensions) {
+    expect(
+      chapter.height,
+      `${chapter.id} should not exceed the viewport below the 80px header`,
+    ).toBeLessThanOrEqual(922);
+  }
+});
+
+test("homepage side navigation updates the URL hash", async ({ page }) => {
+  await page.goto(siteRoute("/"));
+  const navigation = page.getByRole("navigation", {
+    name: "Homepage sections",
+  });
+  await expect(navigation).toBeVisible();
+  await navigation.getByRole("link", { name: "Gallery" }).click();
+  await expect(page).toHaveURL(/#gallery$/);
+  await expect(page.locator("#gallery")).toBeInViewport();
 });
 
 for (const route of routes) {
@@ -112,7 +188,100 @@ test("mobile uses native motion and an operable menu", async ({ page }) => {
     page.getByRole("navigation", { name: "Mobile" }),
   ).toBeVisible();
   await expect(page.locator(".sticky-book")).toBeVisible();
+  await expect(page.locator(".home-chapter-nav__label").first()).toBeHidden();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          document.documentElement.scrollWidth <=
+          document.documentElement.clientWidth,
+      ),
+    )
+    .toBe(true);
 });
+
+test("eligible mobile homepage chapters fit the usable viewport", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(siteRoute("/"));
+
+  const dimensions = await page
+    .locator("[data-home-chapter]")
+    .evaluateAll((chapters) =>
+      chapters.map((chapter) => ({
+        id: chapter.id,
+        height: chapter.getBoundingClientRect().height,
+      })),
+    );
+
+  expect(dimensions).toHaveLength(9);
+  for (const chapter of dimensions) {
+    expect(
+      chapter.height,
+      `${chapter.id} should fit below the mobile header and booking bar`,
+    ).toBeLessThanOrEqual(710);
+  }
+
+  const mobileRailClearance = await page.evaluate(() => {
+    const rail = document.querySelector(".home-chapter-nav");
+    const storyCopy = document.querySelector(".home-story__copy");
+    if (!rail || !storyCopy) return null;
+    return {
+      railLeft: rail.getBoundingClientRect().left,
+      storyCopyRight: storyCopy.getBoundingClientRect().right,
+    };
+  });
+  expect(mobileRailClearance).not.toBeNull();
+  expect(mobileRailClearance!.storyCopyRight).toBeLessThanOrEqual(
+    mobileRailClearance!.railLeft,
+  );
+});
+
+test("short mobile landscape grows naturally without horizontal overflow", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 844, height: 390 });
+  await page.goto(siteRoute("/"));
+
+  await expect(page.locator(".home-chapter-nav--compact")).toBeVisible();
+  await expect(
+    page.locator(".home-chapter-nav--compact a"),
+  ).toHaveCount(3);
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          document.documentElement.scrollWidth <=
+          document.documentElement.clientWidth,
+      ),
+    )
+    .toBe(true);
+});
+
+for (const route of [
+  "/about/",
+  "/speaking/",
+  "/organizations/",
+  "/media/",
+  "/dtv-story/",
+] as const) {
+  test(`mobile supporting hero ${route} stays balanced`, async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(siteRoute(route));
+
+    const hero = page.locator(".page-hero");
+    await expect(hero).toBeVisible();
+    const dimensions = await hero.evaluate((element) => ({
+      height: element.getBoundingClientRect().height,
+      overflow:
+        document.documentElement.scrollWidth -
+        document.documentElement.clientWidth,
+    }));
+    expect(dimensions.height).toBeLessThanOrEqual(710);
+    expect(dimensions.overflow).toBeLessThanOrEqual(0);
+  });
+}
 
 test("reduced motion selects the complete static experience", async ({
   page,

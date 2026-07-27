@@ -4,7 +4,11 @@ import { ResponsiveImage } from "../ui/ResponsiveImage";
 
 export function WorkshopFeature() {
   return (
-    <section className="programs section section--light">
+    <section
+      id="programs"
+      data-home-chapter
+      className="programs home-chapter section section--light"
+    >
       <div className="programs__copy">
         <p className="section-label">Workshops and coaching</p>
         <h2 className="display display--section">

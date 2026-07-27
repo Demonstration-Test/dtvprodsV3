@@ -12,7 +12,12 @@ export function Hero() {
   const motion = useMotionProfile();
   const [lensPaused, setLensPaused] = useState(false);
   return (
-    <section className="hero" aria-labelledby="hero-title">
+    <section
+      id="home"
+      data-home-chapter
+      className="hero home-chapter"
+      aria-labelledby="hero-title"
+    >
       <ViewfinderFrame />
       {motion.allowWebgl ? (
         <Suspense fallback={null}>

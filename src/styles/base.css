@@ -18,7 +18,7 @@ body {
   background: var(--lens-black);
   color: var(--film-white);
   font-family: var(--font-body);
-  font-size: clamp(0.94rem, 0.86rem + 0.25vw, 1.08rem);
+  font-size: clamp(0.95rem, 0.9rem + 0.2vw, 1.08rem);
   line-height: 1.65;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -159,7 +159,7 @@ ul {
 }
 
 .display--hero {
-  font-size: clamp(6.5rem, 12vw, 11.5rem);
+  font-size: var(--display-hero);
 }
 
 .display--hero > span {
@@ -167,17 +167,17 @@ ul {
 }
 
 .display--statement {
-  font-size: clamp(4rem, 8vw, 8.5rem);
+  font-size: var(--display-statement);
 }
 
 .display--section {
   max-width: 14ch;
-  font-size: clamp(3.6rem, 6.7vw, 7rem);
+  font-size: var(--display-section);
 }
 
 .display--page {
   max-width: 10ch;
-  font-size: clamp(5rem, 9vw, 10rem);
+  font-size: var(--display-page);
 }
 
 .section-label {
@@ -213,7 +213,7 @@ ul {
 
 .body-large {
   max-width: 42rem;
-  font-size: clamp(1.08rem, 1rem + 0.5vw, 1.45rem);
+  font-size: clamp(1rem, 0.96rem + 0.24vw, 1.2rem);
   line-height: 1.6;
 }
 
@@ -252,24 +252,11 @@ ul {
 
 @media (max-width: 767px) {
   body {
-    padding-bottom: calc(4.65rem + env(safe-area-inset-bottom));
+    padding-bottom: var(--mobile-booking-height);
   }
 
   html {
     scroll-behavior: auto;
-  }
-
-  .display--hero {
-    font-size: clamp(5.3rem, 25vw, 8.3rem);
-  }
-
-  .display--statement,
-  .display--section {
-    font-size: clamp(3.6rem, 16vw, 5.4rem);
-  }
-
-  .display--page {
-    font-size: clamp(4.6rem, 21vw, 7rem);
   }
 
   .sticky-book {
@@ -281,8 +268,8 @@ ul {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 4.65rem;
-    padding-bottom: env(safe-area-inset-bottom);
+    min-height: var(--mobile-booking-height);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
     border-top: 1px solid rgba(255, 255, 255, 0.45);
     background: linear-gradient(110deg, #1765ff, var(--focus-blue));
     color: white;

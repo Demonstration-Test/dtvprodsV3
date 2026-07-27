@@ -13,6 +13,18 @@ async function loadSiteRoutes() {
 }
 
 describe("complete site routing", () => {
+  it("keeps the supporting routes used by the redesigned homepage", () => {
+    expect(routes.map((route) => route.path)).toEqual(
+      expect.arrayContaining([
+        "/speaking",
+        "/speaking-topics",
+        "/media",
+        "/faq",
+        "/book-damon",
+      ]),
+    );
+  });
+
   it.each(
     routes.filter((route) => route.path !== "/").map((route) => [
       route.path,

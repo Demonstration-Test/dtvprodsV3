@@ -12,10 +12,16 @@
   --line-dark: rgba(244, 240, 232, 0.2);
   --line-light: rgba(8, 8, 8, 0.22);
   --shadow-deep: 0 24px 90px rgba(0, 0, 0, 0.32);
-  --header-height: 6.5rem;
-  --page-gutter: clamp(1.25rem, 5vw, 5.25rem);
-  --section-space: clamp(5rem, 10vw, 10rem);
-  --content-max: 96rem;
+  --header-height: 5rem;
+  --mobile-header-height: 4.5rem;
+  --mobile-booking-height: calc(4rem + env(safe-area-inset-bottom, 0px));
+  --page-gutter: clamp(1.1rem, 4vw, 4rem);
+  --section-space: clamp(3.5rem, 6.5vw, 6.5rem);
+  --content-max: 84rem;
+  --display-hero: clamp(4.75rem, 9vw, 7.75rem);
+  --display-page: clamp(3.5rem, 7vw, 6.75rem);
+  --display-section: clamp(2.75rem, 5vw, 4.75rem);
+  --display-statement: clamp(3rem, 6vw, 5.75rem);
   --font-display: "Bebas Neue", Impact, sans-serif;
   --font-editorial: "Cormorant Garamond", Georgia, serif;
   --font-body: "Manrope", Arial, sans-serif;
@@ -25,8 +31,12 @@
 
 @media (max-width: 767px) {
   :root {
-    --header-height: 5.75rem;
-    --page-gutter: 1.35rem;
-    --section-space: 5.5rem;
+    --header-height: var(--mobile-header-height);
+    --page-gutter: clamp(1.1rem, 5vw, 1.5rem);
+    --section-space: clamp(3.5rem, 12vw, 4.75rem);
+    --display-hero: clamp(3.6rem, 17vw, 5.4rem);
+    --display-page: clamp(3.5rem, 15vw, 5.25rem);
+    --display-section: clamp(2.75rem, 12vw, 4.25rem);
+    --display-statement: clamp(3rem, 13vw, 4.75rem);
   }
 }

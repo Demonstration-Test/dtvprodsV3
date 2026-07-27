@@ -2,7 +2,11 @@ import { homepageCopy, takeaways } from "../../content/siteContent";
 
 export function IntendedTakeaways() {
   return (
-    <section className="takeaways section section--dark">
+    <section
+      id="impact"
+      data-home-chapter
+      className="takeaways home-chapter section section--dark"
+    >
       <p className="section-label">Intended takeaways</p>
       <h2 className="display display--section">
         {homepageCopy.takeaways.heading}

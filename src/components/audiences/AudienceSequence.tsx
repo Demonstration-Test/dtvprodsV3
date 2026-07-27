@@ -19,7 +19,8 @@ export function AudienceSequence() {
   return (
     <section
       id="audiences"
-      className="audiences section section--dark"
+      data-home-chapter
+      className="audiences home-chapter section section--dark"
       aria-labelledby="audience-title"
     >
       <div className="audiences__intro">

@@ -6,7 +6,11 @@ import { ViewfinderFrame } from "../hero/ViewfinderFrame";
 
 export function FinalCta() {
   return (
-    <section className="final-cta section section--dark">
+    <section
+      id="book"
+      data-home-chapter
+      className="final-cta home-chapter section section--dark"
+    >
       <ViewfinderFrame />
       <div className="final-cta__copy">
         <h2 className="display display--section">
