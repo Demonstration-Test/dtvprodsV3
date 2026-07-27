@@ -581,7 +581,7 @@ Label:
 
 Headline:
 
-> DESTINED  
+> DESTINED<br>
 > TO VENTURE.
 
 Supporting copy:
@@ -604,8 +604,8 @@ Text action:
 
 Statement:
 
-> YOU DO NOT HAVE TO  
-> SEE THE ENTIRE ROAD  
+> YOU DO NOT HAVE TO<br>
+> SEE THE ENTIRE ROAD<br>
 > TO TAKE THE NEXT STEP.
 
 Definition:
@@ -705,7 +705,7 @@ Step 3:
 
 Headline:
 
-> YOU WERE NOT BUILT  
+> YOU WERE NOT BUILT<br>
 > TO STAY WHERE YOU STARTED.
 
 Supporting copy:
@@ -776,49 +776,64 @@ Long-summary fallback:
 
 ### FAQ
 
-**What audiences does Damon speak to?**  
+**What audiences does Damon speak to?**
+
 The demo presents four customizable pathways: schools and colleges, athletes and teams, creatives and entrepreneurs, and organizations and brands. Damon reviews the specific audience before recommending a message or format.
 
-**What topics does Damon cover?**  
+**What topics does Damon cover?**
+
 The approved themes include Destined to Venture, purposeful action, vision and execution, discipline, creative entrepreneurship, identity, and leadership through visual storytelling. They are customizable themes rather than fixed packages.
 
-**Does Damon speak at schools and colleges?**  
+**Does Damon speak at schools and colleges?**
+
 Schools and colleges are an approved inquiry pathway. Share the audience, goals, preferred date, and format so Damon or his team can review the opportunity.
 
-**Does Damon offer athletic-team sessions?**  
+**Does Damon offer athletic-team sessions?**
+
 Athletes and teams are an approved inquiry pathway focused on preparation, discipline, identity, pressure, and performance beyond the game.
 
-**Can an engagement include photography or visual storytelling?**  
+**Can an engagement include photography or visual storytelling?**
+
 An organizer may request a photography or visual-storytelling component. Damon or his team confirms whether it is appropriate for the event during engagement planning.
 
-**Does Damon offer workshops?**  
+**Does Damon offer workshops?**
+
 Organizers may inquire about creative, photography, entrepreneurship, and content-creation workshops. Current format, capacity, duration, and pricing are confirmed after review.
 
-**Is Damon available outside New Jersey?**  
+**Is Damon available outside New Jersey?**
+
 Geographic availability is not assumed. Include the event location and travel expectations in the inquiry so availability and costs can be reviewed.
 
-**Does Damon offer virtual engagements?**  
+**Does Damon offer virtual engagements?**
+
 Virtual is an available inquiry option. Damon or his team confirms whether the requested topic and date are a fit for a virtual format.
 
-**How far in advance should an event be booked?**  
+**How far in advance should an event be booked?**
+
 There is no published minimum booking window. Inquire as early as practical and include alternate dates when possible.
 
-**What information is required for an accurate proposal?**  
+**What information is required for an accurate proposal?**
+
 Provide the event type, audience, dates, location or virtual format, estimated audience size, requested format, desired length, objectives, primary challenges, and any travel or budget context.
 
-**Can Damon customize a presentation?**  
+**Can Damon customize a presentation?**
+
 Customization begins with the organizer's goals. Damon or his team reviews the request and recommends the message, format, and level of customization.
 
-**Are travel costs included?**  
+**Are travel costs included?**
+
 Travel costs are not assumed to be included. Any travel requirements and costs are confirmed in the engagement proposal.
 
-**Is a speaker reel available?**  
+**Is a speaker reel available?**
+
 This demo includes an authentic photography-led visual story rather than a fabricated speaker reel. Request current speaker materials through the inquiry form.
 
-**Is a media kit available?**  
+**Is a media kit available?**
+
 Request current media-kit materials through the booking form or by emailing `Bookings@dtvprods.com`.
 
-**Can Damon appear on podcasts and panels?**  
+**Can Damon appear on podcasts and panels?**
+
 Podcast, panel, and media invitations are accepted as inquiry types. Include the topic, format, date, audience, and recording or distribution details.
 
 ### External links
