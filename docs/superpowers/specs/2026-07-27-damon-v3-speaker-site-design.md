@@ -244,7 +244,6 @@ The page alternates dense image-led sequences with calm reading sections. It mus
 - Damon biography
 - Speaking themes
 - Audience pathways
-- Outcomes
 - Workshops
 - Coaching
 - Portfolio projects
@@ -726,35 +725,105 @@ Secondary action:
 - Last name — required, 1–80 characters
 - Work email — required, valid email, 254 characters maximum
 - Organization — required, 1–120 characters
-- Event type — required
-- Preferred date — required
+- Event type — required; use the approved event-type options below
+- Preferred date — required ISO date; must not be earlier than the current local date
 - Short message — required, 20–800 characters
-- Consent — required
+- Consent — required; must equal `true`
 
 ### Full inquiry fields
 
-- First name — required
-- Last name — required
-- Work email — required
-- Phone — required
-- Organization — required
-- Role or title — required
-- Event type — required
-- Audience type — required
-- Preferred date — required
-- Alternate date — optional
-- Event location — required
-- In-person or virtual — required
-- Estimated audience size — required
-- Requested format — required
-- Desired program length — required
+- First name — required, 1–80 characters
+- Last name — required, 1–80 characters
+- Work email — required, valid email, 254 characters maximum
+- Phone — required, 7–20 digits after removing spaces, parentheses, periods, hyphens, and a leading `+`
+- Organization — required, 1–120 characters
+- Role or title — required, 1–120 characters
+- Event type — required; use the approved event-type options below
+- Audience type — required; use the approved audience options below
+- Preferred date — required ISO date; must not be earlier than the current local date
+- Alternate date — optional ISO date; when present, must not be earlier than the current local date and must differ from the preferred date
+- Event location — required, 2–160 characters
+- Delivery format — required; `In person`, `Virtual`, or `Hybrid`
+- Estimated audience size — required; use the approved size options below
+- Requested format — required; use the approved format options below
+- Desired program length — required; use the approved length options below
 - Event objectives — required, 20–1,000 characters
 - Primary audience challenges — required, 20–1,000 characters
-- Budget range — optional
+- Budget range — optional; use the approved budget-context options below
 - Travel expectations — optional, 800 characters maximum
-- How the organizer heard about Damon — required
+- How the organizer heard about Damon — required; use the approved referral options below
 - Additional information — optional, 1,200 characters maximum
-- Consent — required
+- Consent — required; must equal `true`
+
+Approved event-type options:
+
+- School or college program
+- Athletic team or sports program
+- Conference or organizational event
+- Creative entrepreneurship workshop
+- Panel discussion
+- Podcast, interview, or media appearance
+- Other
+
+Approved audience options:
+
+- Schools and colleges
+- Athletes and teams
+- Creatives and entrepreneurs
+- Organizations and brands
+- Mixed audience
+- Other
+
+Approved estimated-audience-size options:
+
+- Under 50
+- 50–99
+- 100–249
+- 250–499
+- 500–999
+- 1,000+
+- Not sure yet
+
+Approved requested-format options:
+
+- Keynote
+- Workshop
+- Assembly
+- Team session
+- Panel
+- Podcast or interview
+- Creative visual-storytelling experience
+- Not sure yet
+
+Approved desired-length options:
+
+- 30 minutes
+- 45 minutes
+- 60 minutes
+- 90 minutes
+- Half day
+- Full day
+- Flexible or not sure
+
+Approved optional budget-context options:
+
+- Under $2,500
+- $2,500–$4,999
+- $5,000–$9,999
+- $10,000+
+- Not sure or prefer to discuss
+
+These options describe the organizer's available budget and do not publish or imply Damon's fees.
+
+Approved referral options:
+
+- DTV Productions website
+- Search engine
+- Social media
+- Personal referral
+- School, team, or organization colleague
+- Saw Damon or DTV at an event
+- Other
 
 Exact consent:
 
