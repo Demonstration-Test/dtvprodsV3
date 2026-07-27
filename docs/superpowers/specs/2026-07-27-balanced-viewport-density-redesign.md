@@ -1,14 +1,14 @@
 # Damon V3 Balanced Viewport Density Redesign
 
 Date: 2026-07-27  
-Status: Approved design, pending written-spec review  
+Status: Approved design, revised after independent written-spec review  
 Target: Damon V3 homepage and all supporting routes
 
 ## 1. Objective
 
 Recalibrate Damon V3 from an oversized cinematic presentation into a balanced editorial website while preserving its photography-led identity. The redesigned site must:
 
-- Reduce typography, image, control, header, and spacing scale by roughly 30%.
+- Reduce display typography, major media, and section spacing by approximately 25–35% at the tested viewports. Body text, form controls, and minimum touch targets are exempt from proportional reduction so readability and accessibility do not regress.
 - Keep the homepage hero full-screen.
 - Present each major homepage chapter within the visible viewport instead of creating sections taller than the viewport.
 - Retain natural, smooth navigation without forced scroll snapping.
@@ -53,17 +53,25 @@ The chapter contains:
 
 - One main image.
 - A concise heading and contextual paragraph.
-- Five named selectors:
-  1. Behind the Lens
-  2. Building the Craft
-  3. DTV Begins
-  4. The Name Evolves
-  5. Destined to Venture
+- Five named selectors with the following locked content and media:
+
+| Selector | Heading | Supporting copy | Metadata | Media | Alt text |
+| --- | --- | --- | --- | --- | --- |
+| Behind the Lens | The work behind the vision. | Damon built DTV through photography, creative direction, and the discipline to keep moving before the full road was visible. | `BEHIND THE LENS / 002` | `MD-002` | Damon J. Young Jr. composing a photograph outdoors with a professional camera. |
+| Building the Craft | Preparation becomes the practice. | Working behind the camera turned ideas into a repeatable craft built through planning, direction, and attention to the person in front of the lens. | `CRAFT IN MOTION / 003` | `MD-003` | Damon photographing an athlete during an outdoor creative session. |
+| DTV Begins | DTV Productions begins. | In 2020, the creative work became DTV Productions: a place to build photography, direction, and entrepreneurial discipline into a focused practice. | `ORIGIN / 2020` | `MD-015` | Dramatic studio portrait lit against a deep red stage. |
+| The Name Evolves | DamonTV becomes a wider idea. | The name evolved as the work expanded beyond individual projects toward a larger story about movement, possibility, and intentional growth. | `EVOLUTION / DAMONTV` | `MD-019` | Montage of colorful sports media-day portraits. |
+| Destined to Venture | The idea becomes the mission. | What began behind the lens became a wider commitment to movement, discipline, entrepreneurship, and possibility. | `MISSION / DTV` | `MD-020` | Damon J. Young Jr. wearing a purple DTV shirt and black DTV cap. |
+
 - A short statement and camera-style metadata associated with each selection.
-- A “Meet Damon” or “Read the DTV Story” route action.
+- A primary “Read the DTV Story” action to `/dtv-story` and a smaller “Meet Damon” action to `/about`.
 - A disclosure explaining that the imagery represents DTV visual-storytelling work and does not document a speaking engagement.
 
 The generic labels “Frame 01” and “Frame 02” are removed. The selector must support pointer, keyboard, and screen-reader use. Selection changes update the image and descriptive text with a short fade.
+
+Copy retained from the old homepage is limited to the approved Introduction paragraph, the 2020/DamonTV/Destined to Venture timeline facts, and the final “What began behind the lens…” sentence shown in the matrix. The old Motion Story boilerplate and generic frame labels are removed. The deleted Principle / 01 statement and its definition must not be reintroduced in this chapter.
+
+The user’s approval of this consolidated five-state Story chapter on 2026-07-27 records a homepage-placement amendment for `MD-015`, `MD-019`, and `MD-020` in this chapter. Rights and disclosure status continue to inherit the approved media manifest.
 
 ### 3.3 Audience Pathways
 
@@ -86,14 +94,21 @@ Categories:
 4. Creative Editorial
 5. Portrait / Fashion
 
-Each category provides:
+Category media is locked to the available approved inventory:
 
-- One featured image.
-- Three selectable preview images.
-- A concise category label.
-- Code-native controls with meaningful accessible names.
+| Category | Approved homepage media |
+| --- | --- |
+| Events | `MD-018` |
+| Sports / Media Day | `MD-005`, `MD-012`, `MD-019` |
+| Graduation | `MD-004`, `MD-013`, `MD-014` |
+| Creative Editorial | `MD-010`, `MD-011`, `MD-015` |
+| Portrait / Fashion | `MD-009`, `MD-016`, `MD-017` |
+
+Each category provides one featured image and, when the category contains more than one approved asset, selectable previews for the remaining images. The Events category intentionally presents one feature image with no duplicate thumbnails. Controls use meaningful accessible names.
 
 Desktop uses a featured image plus compact thumbnail rail. Mobile uses a main image with a horizontal thumbnail strip. All media must come from the approved local DTV asset set.
+
+The user’s approval of this category-rich homepage gallery on 2026-07-27 records a homepage-placement amendment for `MD-012`, `MD-013`, `MD-014`, and `MD-018`. No new files outside `MD-001` through `MD-022` are authorized.
 
 Primary action: “View the full media gallery,” linking to `/media`.  
 Secondary action: a smaller external DTV Productions link may remain.
@@ -120,9 +135,11 @@ Combines Booking Process and Organizer FAQ into one viewport chapter with two ta
 - Booking Process
 - Organizer FAQ
 
-Booking Process shows the existing steps in a compact layout and retains the “Start an inquiry” action.
+Booking Process is the initial tab. It shows the existing steps in a compact layout and retains the “Start an inquiry” action.
 
-Organizer FAQ shows the most useful preview questions in the existing accessible accordion. The full FAQ remains available at `/faq`.
+Organizer FAQ shows these existing preview questions: audiences, topics, workshops, travel, and speaker reel. The audiences item is initially expanded the first time the FAQ tab opens. Accordion state persists when switching between Plan tabs. The full FAQ remains available at `/faq`.
+
+Tabs use `tablist`, `tab`, and `tabpanel` semantics, roving `tabindex`, and Left/Right/Home/End keyboard navigation with automatic activation. Switching tabs focuses the newly selected tab, not the panel.
 
 ### 3.8 Inquire
 
@@ -140,6 +157,17 @@ Requirements:
 - Do not claim the email was sent or delivered.
 - Retain a route action to the full booking form.
 - Announce step and validation changes accessibly.
+
+State and focus rules:
+
+- Contact is the initial step.
+- “Continue” validates only the current step. If invalid, expose an `aria-live` error summary and focus the first invalid field.
+- After a successful advance or backward move, focus the new step heading.
+- “Back” never clears valid field values.
+- Preparing the review focuses the Review heading.
+- Returning from Review to edit any field clears the prepared review state. A new review is generated only after the edited data passes validation again.
+- Browser refresh resets the unsubmitted homepage form because the design does not persist personal information.
+- The full booking route remains independent of homepage step state.
 
 ### 3.9 Final CTA
 
@@ -169,51 +197,63 @@ The corresponding supporting routes and approved content remain available elsewh
 
 ### 5.1 Global dimensions
 
-Target values:
+The current CSS values are the baseline. These locked targets replace them:
 
-- Header height: approximately `5rem` desktop and `4.5rem` mobile.
-- Sticky mobile booking bar: approximately `4rem`.
-- Content maximum width: approximately `82rem`, down from `96rem`.
-- Page gutter: approximately `1.1rem` mobile through `4rem` large desktop.
-- Standard section spacing: approximately `2.5rem` through `5rem`, down from `5rem` through `10rem`.
+| Token or surface | Current baseline | Redesigned target | Measurement rule |
+| --- | --- | --- | --- |
+| Desktop header | `6.5rem` | `5rem` | 23% reduction |
+| Mobile header | `5.75rem` | `4.5rem` | 22% reduction |
+| Content maximum | `96rem` | `84rem` | Bounded width adjustment; exempt from the 25–35% target |
+| Page gutter | `1.25rem`–`5.25rem` | `1.1rem`–`4rem` | Responsive edge spacing |
+| Section spacing | `5rem`–`10rem` | `3.5rem`–`6.5rem` | 30–35% reduction at range endpoints |
+| Mobile sticky booking bar | `4.65rem` plus safe area | `4rem` plus safe area | Preserve a minimum 44px primary action height |
+
+At `1440 × 1000` and `390 × 844`, computed display typography, primary media bounds, and section whitespace should be 25–35% smaller than the current deployed baseline screenshots. A difference outside that band requires an intentional responsive or accessibility reason recorded in the fidelity ledger.
 
 ### 5.2 Typography
 
-Target ranges:
+Locked ranges:
 
-- Hero display: approximately `4.75rem`–`7.5rem` desktop and `3.6rem`–`5rem` mobile.
-- Page display: approximately `3.5rem`–`6.5rem`.
-- Section display: approximately `2.75rem`–`4.75rem`.
-- Statement display: approximately `3rem`–`5.5rem`.
-- Body: approximately `0.95rem`–`1.08rem`.
-- Large body: approximately `1rem`–`1.2rem`.
-- Labels and metadata remain readable at approximately `0.65rem`–`0.75rem`.
+| Type role | Current baseline | Redesigned target |
+| --- | --- | --- |
+| Hero display | `6.5rem`–`11.5rem`; mobile `5.3rem`–`8.3rem` | `4.75rem`–`7.75rem`; mobile `3.6rem`–`5.4rem` |
+| Page display | `5rem`–`10rem` | `3.5rem`–`6.75rem` |
+| Section display | `3.6rem`–`7rem` | `2.75rem`–`4.75rem` |
+| Statement display | `4rem`–`8.5rem` | `3rem`–`5.75rem` |
+| Body | `0.94rem`–`1.08rem` | `0.95rem`–`1.08rem`; readability exemption |
+| Large body | `1.08rem`–`1.45rem` | `1rem`–`1.2rem` |
+| Labels and metadata | `0.68rem`–`0.75rem` | `0.68rem`–`0.75rem`; readability exemption |
 
 Typography must preserve the existing Bebas Neue, Cormorant Garamond, Manrope, and Space Mono roles.
 
+Buttons, inputs, selects, textareas, checkboxes, and touch targets must not be scaled below accessible minimums. Desktop pointer targets remain at least 32px high where WCAG permits; primary actions and all mobile interactive targets remain at least 44px high, except the space-constrained mobile chapter-rail targets described in Section 6, which use the WCAG 2.5.8 24px minimum plus separation.
+
 ### 5.3 Media
 
-- Hero portrait remains dominant without crowding copy.
-- Main chapter imagery uses bounded aspect ratios and maximum heights based on the available viewport.
-- Supporting-page media uses smaller maximum widths and heights.
+- Hero portrait remains dominant without crowding copy. Replace the current desktop `min(62vw, 59rem)` bound with approximately `min(48vw, 44rem)`. Replace the current mobile `115vw`/`80%` media box and `1.3` scale with an approximately `88vw`/`68%` box and no more than `1.12` scale, subject to face-safe cropping.
+- Main chapter imagery uses bounded aspect ratios and a maximum height of `min(58vh, 36rem)` on standard desktop viewports.
+- Supporting-page hero media reduces from the current 46rem maximum to approximately 34rem.
 - Thumbnail imagery uses consistent aspect ratios and visible selected states.
 - Media never grows beyond the chapter in typical supported viewports.
 
 ### 5.4 Viewport chapter contract
 
-Define a shared available-height token:
+Define shared height tokens:
 
-- Desktop: viewport height minus sticky header.
-- Mobile: viewport height minus sticky header and sticky booking bar.
+- `--header-height: 5rem` desktop and `4.5rem` mobile.
+- `--mobile-book-height: calc(4rem + env(safe-area-inset-bottom, 0px))`.
+- Desktop `--chapter-height: calc(100svh - var(--header-height))`.
+- Mobile `--chapter-height: calc(100svh - var(--header-height) - var(--mobile-book-height))`.
 
-At typical viewport sizes, homepage chapters use the available height and avoid exceeding it.
+The default or collapsed state of every homepage chapter must fit `--chapter-height` when the available chapter height is at least 620px on desktop or 560px on mobile. This covers the required `1280 × 720`, `390 × 844`, and `360 × 740` test viewports after subtracting the relevant chrome.
 
 Responsive safeguards:
 
 - Use `svh` units to avoid mobile browser chrome instability.
 - Use `clamp()` and height-aware media queries for short screens.
 - Reflow multi-column content into compact states instead of stacking every item vertically.
-- Permit natural height only when strict containment would clip enlarged text, validation errors, or essential controls.
+- “Fits” applies to the default Story selection, selected audience, default gallery category, initial Plan tab, and each inquiry step before errors are shown.
+- Permit natural document growth for expanded FAQ answers, validation errors, browser zoom, enlarged system text, translated text expansion, or an available chapter height below the supported minimum.
 - Avoid internal section scrollbars.
 
 ## 6. Homepage Side Navigation
@@ -225,21 +265,26 @@ Desktop:
 - Dot plus short label.
 - Active chapter indicator.
 - Compact progress line or state.
+- Use the labeled layout from `min-width: 1024px` when the viewport is at least 650px tall.
 
 Mobile:
 
 - Dots only.
 - Active dot is visually distinct.
 - Controls stay outside primary text and action hit areas.
+- Each dot link has at least a 24px target with at least 8px separation and a meaningful accessible name.
+- At raw viewport heights below 680px or in landscape orientation, collapse the rail to three controls: previous chapter, current chapter, and next chapter.
 
 Behavior:
 
 - Links target stable chapter IDs.
-- Active state is driven by an `IntersectionObserver`.
+- Active state is driven by an `IntersectionObserver`; choose the chapter with the largest intersection ratio, breaking ties by the chapter whose center is closest to the viewport center.
 - Click, keyboard activation, route focus, and browser history behavior remain predictable.
-- Navigation exposes an accessible label and current-page state.
+- Navigation uses `<nav aria-label="Homepage sections">`. Each destination is an anchor with an accessible chapter name, and the active destination uses `aria-current="location"`.
+- Activating a destination pushes its hash with `history.pushState`, scrolls to the chapter, and leaves focus on the navigation control. Initial hashes and browser `popstate`/back/forward navigation scroll to the matching chapter without shifting focus unexpectedly.
 - Reduced-motion mode uses immediate navigation.
 - The navigation is hidden when printing.
+- Place the rail inside `max(env(safe-area-inset-right, 0px), 0.75rem)` and keep it clear of the sticky booking bar and header.
 
 Approved labels:
 
@@ -253,13 +298,16 @@ Approved labels:
 - Inquire
 - Book
 
+Stable IDs are `home`, `story`, `audiences`, `gallery`, `impact`, `programs`, `plan`, `inquire`, and `book`.
+
 ## 7. Supporting Pages
 
 Apply the balanced global system to all routes:
 
 - Smaller page headings and body copy.
 - Smaller header, buttons, cards, images, and section padding.
-- Full visible-viewport opening hero.
+- Full-screen treatment is exclusive to the homepage hero.
+- Supporting-page opening heroes use `min-height: clamp(28rem, 68svh, 42rem)` on desktop and natural content height with a minimum of 28rem on mobile.
 - Compact subsequent sections that do not use oversized minimum heights.
 - Preserve existing route content, disclosures, navigation, forms, metadata, and media rights.
 
@@ -301,7 +349,7 @@ Supporting routes remain:
 - Inquiry steps announce the active step and show field errors next to the affected controls.
 - No content is clipped at browser zoom or enlarged text settings.
 - Reduced-motion mode presents a complete static experience.
-- If JavaScript is unavailable, the first meaningful state remains visible and all route links remain usable.
+- If JavaScript is unavailable, `index.html` provides a concise `<noscript>` fallback containing the site name, positioning statement, booking email link, phone link, and links to Home, About, Speaking, Media, FAQ, and Book Damon. Interactive galleries and forms are explicitly identified as requiring JavaScript; the fallback does not claim they function.
 
 ## 10. Testing and Acceptance Criteria
 
@@ -323,7 +371,11 @@ Test at minimum:
 - Laptop: `1280 × 720`.
 - Mobile: `390 × 844`.
 - Small mobile: `360 × 740`.
+- Short desktop: `1280 × 650`.
+- Mobile landscape: `844 × 390`.
 - Reduced motion.
+- Chromium for the full interaction suite.
+- Firefox and WebKit for page identity, direct routes, overflow, chapter sizing, and primary interaction smoke tests.
 
 Verify:
 
@@ -337,6 +389,12 @@ Verify:
 - Inquiry steps validate and retain data.
 - All supporting routes use the balanced scale and direct-load successfully.
 - No relevant application console errors or accessibility violations.
+- Keyboard-only operation works for the Story selectors, audience controls, gallery category and thumbnail controls, Plan tabs, FAQ accordion, homepage side navigation, and inquiry steps.
+- Side-navigation hashes work on initial load, click, browser Back, and browser Forward.
+- At 200% browser zoom and with enlarged text, content grows naturally without clipping, overlapping the header/booking bar, or creating internal scroll traps.
+- Mobile and landscape touch targets do not overlap and meet the target rules in Sections 5 and 6.
+- The no-JavaScript fallback exposes the approved contact and route links.
+- Expanded FAQ answers and validation errors may grow the chapter naturally, as defined in Section 5.4; the collapsed/default state remains within the chapter-height contract.
 
 ### Visual acceptance
 
@@ -352,5 +410,9 @@ After local tests and visual review pass:
 1. Commit the implementation intentionally.
 2. Push `main` to `Demonstration-Test/dtvprodsV3`.
 3. Allow the existing GitHub Pages workflow to build and deploy.
-4. Verify the live homepage, direct routes, media assets, mobile navigation, interactive selectors, and inquiry flow.
-
+4. Preserve the Vite base path `/dtvprodsV3/`, deterministic static route generation, route-specific metadata, and `404.html`.
+5. Verify production at `https://demonstration-test.github.io/dtvprodsV3/`.
+6. Direct-load and reload `/media/`, `/book-damon/`, and at least one audience route.
+7. Direct-load the homepage hashes `#story`, `#gallery`, `#inquire`, and `#book`; verify that each resolves below the sticky header and that Back/Forward navigation remains correct.
+8. Verify representative CSS, JavaScript, font, and `/dtvprodsV3/media/` asset requests use the repository base path and return successfully.
+9. Verify the live mobile navigation, Story selector, Gallery selector, Plan tabs, FAQ accordion, and inquiry flow.
