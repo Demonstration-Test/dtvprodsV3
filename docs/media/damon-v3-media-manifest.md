@@ -1,7 +1,7 @@
-# Damon V3 Draft Media Manifest
+# Damon V3 Final Media Manifest
 
 Date: 2026-07-27  
-Status: Draft — proposed placements require user approval  
+Status: Approved — `MD-001` through `MD-022` are approved for their recorded public-demo placements
 Machine-readable source: `docs/media/damon-v3-media-manifest.json`
 
 ## Approval meaning
@@ -33,6 +33,9 @@ No listed image will be presented as proof of a speaking engagement. Portfolio i
 | `MD-017` | Fashion portrait in black leather | Creative portfolio; contact sheet | Authentic DTV work; user-authorized demo; subject release not independently verified | Vertical, square, and torso crops; AVIF/WebP |
 | `MD-018` | Event photograph with bride and guests | Portfolio events category only | Authentic DTV work; user-authorized demo; event/subject releases not independently verified | Landscape and mobile crops; AVIF/WebP |
 | `MD-019` | Sports media-day montage | Portfolio media-day category; DTV story | Authentic DTV work; user-authorized demo; subject releases not independently verified | Wide strip and individual-safe crop review; AVIF/WebP |
+| `MD-020` | Transparent cutout derived from the authentic Damon studio portrait | Hero portrait and cinematic final CTA | Authentic portrait derivative; background removed with Higgsfield; no identity generation | Responsive AVIF/WebP derivatives |
+| `MD-021` | Generated macro camera-aperture texture | Motion-story background and dark editorial transitions | AI-generated non-human supplementary texture; Higgsfield Recraft V4.1 | Responsive AVIF/WebP derivatives |
+| `MD-022` | Generated analog film light-leak texture | Motion-story overlay and restrained section transitions | AI-generated non-human supplementary texture; Higgsfield Recraft V4.1 | Responsive AVIF/WebP derivatives |
 
 ## Source details
 
@@ -61,6 +64,12 @@ No listed image will be presented as proof of a speaking engagement. Portfolio i
 - `MD-016`: Drive ID `1rX9TCym3qfI996XrNtCRhguDHXzcPTFG`
 - `MD-017`: Drive ID `1EDCOz9fkvRjpIr8rMEkg9YtqEyTkADTN`
 
+### Higgsfield supplementary assets
+
+- `MD-020`: `assets/media/supplementary/damon-hero-cutout.png`; derived from `MD-001`; Higgsfield job `74d6f1ed-a407-43d4-a622-a115c58784f7`
+- `MD-021`: `assets/media/supplementary/cinematic-aperture-texture.png`; Higgsfield job `6c201ec4-ae5b-4c1e-82da-3b95d0e9e93c`
+- `MD-022`: `assets/media/supplementary/film-light-leak-texture.png`; Higgsfield job `92b4934c-aea7-4964-bab2-8aee117cb41f`
+
 ## Proposed alt text
 
 - `MD-001`: Damon J. Young Jr. wearing a purple DTV shirt and black DTV cap.
@@ -82,6 +91,9 @@ No listed image will be presented as proof of a speaking engagement. Portfolio i
 - `MD-017`: Fashion portrait in a black leather jacket.
 - `MD-018`: Bride celebrating with guests during an event.
 - `MD-019`: Montage of colorful sports media-day portraits.
+- `MD-020`: Damon J. Young Jr. wearing a purple DTV shirt and black DTV cap.
+- `MD-021`: Decorative camera-aperture background; use an empty alt attribute.
+- `MD-022`: Decorative film-light overlay; use an empty alt attribute.
 
 ## Intentionally excluded
 
@@ -90,8 +102,8 @@ No listed image will be presented as proof of a speaking engagement. Portfolio i
 - No client or organization logo is included.
 - No image is labeled as a keynote, school assembly, coaching session, or speaking event.
 - No generated human or audience imagery is proposed.
+- The two generated assets contain no people, logos, readable text, client claims, or speaking-event implications.
 
-## Approval request
+## Approval record
 
-Approve `MD-001` through `MD-019` and their proposed placements, or identify any media ID that should be removed or moved before derivatives and design concepts are created.
-
+The user approved `MD-020` through `MD-022` and their proposed placements on 2026-07-27. The full `MD-001` through `MD-022` set is locked for interface development.

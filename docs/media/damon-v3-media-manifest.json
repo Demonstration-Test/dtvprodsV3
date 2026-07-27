@@ -1,7 +1,8 @@
 {
-  "version": 1,
+  "version": 2,
   "date": "2026-07-27",
-  "status": "draft",
+  "status": "approved",
+  "previousApproval": "MD-001 through MD-019 source use and placement approved by user",
   "approvalMeaning": "Approval confirms proposed public-demo use and placement. Underlying client and subject releases were not independently verified by Codex.",
   "items": [
     {
@@ -24,7 +25,7 @@
       "focalPoint": "face and crossed arms",
       "altText": "Damon J. Young Jr. wearing a purple DTV shirt and black DTV cap.",
       "optimizationStatus": "source_audited_variants_missing",
-      "missingVariants": ["transparent-cutout", "desktop-avif", "desktop-webp", "tablet-avif", "tablet-webp", "mobile-avif", "mobile-webp"],
+      "missingVariants": ["desktop-avif", "desktop-webp", "tablet-avif", "tablet-webp", "mobile-avif", "mobile-webp"],
       "notes": "Primary authentic hero portrait. Do not reshape or over-retouch."
     },
     {
@@ -451,6 +452,81 @@
       "optimizationStatus": "source_audited_variants_missing",
       "missingVariants": ["wide-avif", "wide-webp", "mobile-safe-avif", "mobile-safe-webp"],
       "notes": "Review individual visibility before narrow-screen crops."
+    },
+    {
+      "id": "MD-020",
+      "filename": "damon-hero-cutout.png",
+      "assetType": "transparent portrait derivative",
+      "source": {
+        "provider": "higgsfield",
+        "jobId": "74d6f1ed-a407-43d4-a622-a115c58784f7",
+        "derivedFrom": "MD-001",
+        "localPath": "assets/media/supplementary/damon-hero-cutout.png"
+      },
+      "status": "authentic_derivative",
+      "rightsStatus": "inherits_MD-001_user_authorized_demo_release_not_independently_verified",
+      "approvalStatus": "approved",
+      "intendedRoutes": ["/", "/about"],
+      "intendedSections": ["hero", "final-cta"],
+      "desktopUse": true,
+      "mobileUse": true,
+      "sourceDimensions": {"width": 1365, "height": 2048},
+      "aspectRatio": "2:3 transparent canvas",
+      "focalPoint": "face and crossed arms",
+      "altText": "Damon J. Young Jr. wearing a purple DTV shirt and black DTV cap.",
+      "optimizationStatus": "transparent_master_ready_variants_missing",
+      "missingVariants": ["desktop-avif", "desktop-webp", "tablet-avif", "tablet-webp", "mobile-avif", "mobile-webp"],
+      "notes": "Background removal only. No generated or altered identity."
+    },
+    {
+      "id": "MD-021",
+      "filename": "cinematic-aperture-texture.png",
+      "assetType": "generated decorative texture",
+      "source": {
+        "provider": "higgsfield",
+        "model": "Recraft V4.1",
+        "jobId": "6c201ec4-ae5b-4c1e-82da-3b95d0e9e93c",
+        "localPath": "assets/media/supplementary/cinematic-aperture-texture.png"
+      },
+      "status": "ai_generated_non_human_supplement",
+      "rightsStatus": "user_authorized_generation",
+      "approvalStatus": "approved",
+      "intendedRoutes": ["/", "/media"],
+      "intendedSections": ["motion-story-background", "dark-editorial-transition"],
+      "desktopUse": true,
+      "mobileUse": true,
+      "sourceDimensions": {"width": 2688, "height": 1536},
+      "aspectRatio": "16:9",
+      "focalPoint": "aperture detail on right; quiet black area on left",
+      "altText": "",
+      "optimizationStatus": "master_ready_variants_missing",
+      "missingVariants": ["desktop-avif", "desktop-webp", "mobile-avif", "mobile-webp"],
+      "notes": "Decorative only. Must not receive semantic alt text."
+    },
+    {
+      "id": "MD-022",
+      "filename": "film-light-leak-texture.png",
+      "assetType": "generated decorative texture",
+      "source": {
+        "provider": "higgsfield",
+        "model": "Recraft V4.1",
+        "jobId": "92b4934c-aea7-4964-bab2-8aee117cb41f",
+        "localPath": "assets/media/supplementary/film-light-leak-texture.png"
+      },
+      "status": "ai_generated_non_human_supplement",
+      "rightsStatus": "user_authorized_generation",
+      "approvalStatus": "approved",
+      "intendedRoutes": ["/", "/media", "/dtv-story"],
+      "intendedSections": ["motion-story-overlay", "section-transition"],
+      "desktopUse": true,
+      "mobileUse": true,
+      "sourceDimensions": {"width": 2688, "height": 1536},
+      "aspectRatio": "16:9",
+      "focalPoint": "quiet center with blue, violet, and amber edge arcs",
+      "altText": "",
+      "optimizationStatus": "master_ready_variants_missing",
+      "missingVariants": ["desktop-avif", "desktop-webp", "mobile-avif", "mobile-webp"],
+      "notes": "Decorative overlay only. Must remain low opacity and must not reduce text contrast."
     }
   ],
   "excluded": [
