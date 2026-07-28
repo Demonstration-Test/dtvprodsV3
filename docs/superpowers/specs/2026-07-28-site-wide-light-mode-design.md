@@ -28,6 +28,7 @@ GitHub Pages architecture.
 - The operating-system color preference does not affect the initial theme.
 - Selecting a theme updates:
   - the document `data-theme` value;
+  - the root `color-scheme` value;
   - the navbar control state and accessible name;
   - the `theme-color` metadata;
   - the saved `dtv-theme` value when storage is available.
@@ -47,10 +48,20 @@ The script:
 2. accepts only the exact value `light`;
 3. otherwise selects `dark`;
 4. sets `document.documentElement.dataset.theme`;
-5. updates the existing `theme-color` metadata to the matching page color.
+5. sets `document.documentElement.style.colorScheme` to the matching exact
+   `dark` or `light` value;
+6. updates the existing `theme-color` metadata to:
+   - dark: `#080808`
+   - light: `#f4f0e8`
 
 This prevents a dark flash when a returning visitor has selected light mode.
 It does not use system theme detection and does not require a new dependency.
+
+The initializer and the `theme-color` metadata must appear before the
+application module in `index.html` and in every generated static route
+document. Saved-light direct loads and reloads must render light from the first
+paint on representative supporting routes, not only after client navigation
+from the homepage.
 
 ## Navbar Control
 
@@ -98,6 +109,10 @@ Required semantic roles include:
 - field/control background;
 - footer background;
 - texture and overlay strength.
+
+The semantic theme definition also controls the root `color-scheme` so native
+form fields, selects, date inputs, autofill rendering, scrollbars, and other
+browser-rendered surfaces match the active theme.
 
 Dark-mode semantic values reproduce the current deployed presentation.
 Light-mode semantic values use:
@@ -152,6 +167,8 @@ editorial rhythm, but all remain visibly part of the light presentation.
 - Keep the Damon portrait and all photography in their original colors.
 - Do not apply CSS inversion, hue rotation, brightness washing, or opacity
   changes to photographs.
+- Existing geometry-only treatments such as drop shadows may remain when they
+  do not alter photographic color or legibility.
 - Preserve transparent cutout containment and current responsive bounds.
 
 ## Photography and Media
@@ -181,6 +198,13 @@ editorial rhythm, but all remain visibly part of the light presentation.
 - Theme changes are immediate and require no announcement beyond the changed
   button state/name.
 - Both themes preserve visible focus indicators and accessible contrast.
+- Meet WCAG 2.2 AA contrast thresholds:
+  - at least `4.5:1` for normal text;
+  - at least `3:1` for large text;
+  - at least `3:1` for controls, meaningful boundaries, selected states, and
+    focus indicators against adjacent colors.
+- The contrast contract applies to representative default, hover, active,
+  selected, disabled, validation-error, and focus states in both themes.
 - The responsive navigation focus boundary continues to include the visible
   header controls without trapping users outside the overlay/header region.
 - Reduced-motion behavior remains unchanged.
@@ -229,12 +253,16 @@ rendering the full site.
 
 ### Theme state owner
 
-A small provider or hook:
+One app-root `ThemeProvider` is the sole runtime state owner. It:
 
 - initializes from the pre-rendered document attribute;
 - exposes the current theme and a toggle action;
 - keeps React state synchronized with the document;
 - avoids duplicating storage and metadata logic.
+
+A consumer hook reads this provider and must not create independent theme
+state. All root-attribute, `color-scheme`, metadata, and persistence mutations
+pass through the theme utility/provider boundary.
 
 ### Navbar control
 
@@ -252,7 +280,10 @@ Follow strict red-green-refactor cycles.
 - `dark` restores dark mode.
 - Invalid values resolve to dark.
 - Storage read and write failures do not throw.
-- Applying a theme updates the root attribute and theme-color metadata.
+- Applying a theme updates the root attribute, exact root `color-scheme`, and
+  exact theme-color metadata:
+  - dark: `#080808`
+  - light: `#f4f0e8`
 
 ### Component tests
 
@@ -272,6 +303,12 @@ Follow strict red-green-refactor cycles.
 - Saved light mode is applied before React starts.
 - Invalid or unavailable storage produces dark mode without an uncaught
   exception.
+- Every generated route document contains the initializer and exact
+  theme-color metadata before its application module.
+- Saved-light direct load and reload of `/about/`, `/media/`, `/faq/`, and
+  `/book-damon/` begin in light mode.
+- Blocked-storage direct load and reload fall back to dark without an uncaught
+  exception.
 - The Vite base remains `/dtvprodsV3/`.
 
 ### Style contract tests
@@ -279,8 +316,13 @@ Follow strict red-green-refactor cycles.
 - Semantic theme tokens exist for every required surface role.
 - Dark defaults retain the current palette.
 - Light overrides cover all major surface families.
-- Photography is never inverted or filtered.
+- Photography is never inverted, hue-rotated, brightness/color washed, or
+  faded with opacity; geometry-only drop shadows remain allowed.
 - Light media matte is applied.
+- Root `color-scheme`, native fields, selects, date controls, autofill
+  treatment, and scrollbars match the active mode.
+- Representative text, control, selected, disabled, error, hover, active, and
+  focus colors meet the specified WCAG 2.2 AA thresholds.
 - Existing centered-frame, viewport-height, and contained-image contracts
   remain present.
 
@@ -300,6 +342,9 @@ At `1440×1000`, `1073×427`, and `390×844`:
 - no horizontal overflow, clipped controls, broken images, framework overlays,
   accessibility violations, relevant console errors, or failed requests
   occur.
+- native form controls, autofill, scrollbars, selects, and date inputs report
+  the active root `color-scheme` and do not retain dark browser surfaces in
+  light mode.
 
 Visual screenshots cover:
 
@@ -313,8 +358,13 @@ Visual screenshots cover:
 
 - The current dark site remains the default for new visitors.
 - A navbar button switches the complete website to light mode.
-- Light preference persists across reloads and later visits.
-- Returning light-mode visitors do not see a dark first-paint flash.
+- When browser storage is readable and writable, light preference persists
+  across reloads and later visits.
+- When browser storage is readable and writable, returning light-mode visitors
+  do not see a dark first-paint flash on the homepage or generated supporting
+  routes.
+- When storage is unavailable, the current-page toggle still works and the
+  next direct load safely falls back to dark.
 - The complete homepage, supporting routes, responsive menus, forms, footer,
   and mobile booking action use the light presentation.
 - Photography is not color-inverted or cropped.
@@ -324,6 +374,9 @@ Visual screenshots cover:
 - After implementation approval, the change is committed to `main`, pushed,
   deployed through GitHub Pages, and verified at:
   `https://demonstration-test.github.io/dtvprodsV3/`.
+- Live verification includes saved-light direct loads and reloads of
+  `/about/`, `/media/`, `/faq/`, and `/book-damon/`, plus exact
+  `theme-color` and root `color-scheme` values.
 
 ## Non-Goals
 
