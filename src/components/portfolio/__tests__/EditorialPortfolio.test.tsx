@@ -40,6 +40,9 @@ describe("EditorialPortfolio", () => {
       screen.getByAltText("Bride celebrating with guests during an event."),
     ).toBeInTheDocument();
     expect(
+      screen.getByRole("group", { name: "Gallery previews" }),
+    ).toBeVisible();
+    expect(
       within(screen.getByLabelText("Gallery previews")).queryAllByRole("button"),
     ).toHaveLength(0);
   });

@@ -76,13 +76,45 @@ export function createNotFoundHtml(_template: string) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex">
     <meta name="theme-color" content="#080808">
+    <script data-theme-initializer>
+      (() => {
+        const root = document.documentElement;
+        const themeColor = document.querySelector('meta[name="theme-color"]');
+        let theme = "dark";
+        try {
+          if (localStorage.getItem("dtv-theme") === "light") {
+            theme = "light";
+          }
+        } catch {}
+        root.dataset.theme = theme;
+        root.style.colorScheme = theme;
+        if (themeColor) {
+          themeColor.content =
+            theme === "light" ? "#f4f0e8" : "#080808";
+        }
+      })();
+    </script>
     <title>Page Not Found | DTV</title>
     <style>
-      :root { color-scheme: dark; font-family: Arial, sans-serif; }
-      body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #080808; color: #f4f0e8; }
+      :root {
+        color-scheme: dark;
+        --page-background: #080808;
+        --page-text: #f4f0e8;
+        --page-muted: #b7bbc0;
+        --page-action: #2d6bff;
+        font-family: Arial, sans-serif;
+      }
+      :root[data-theme="light"] {
+        color-scheme: light;
+        --page-background: #f4f0e8;
+        --page-text: #171717;
+        --page-muted: #5f646a;
+        --page-action: #1657e8;
+      }
+      body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: var(--page-background); color: var(--page-text); }
       main { width: min(42rem, calc(100% - 3rem)); }
-      p { color: #b7bbc0; font-size: 1.125rem; line-height: 1.6; }
-      a { color: #f4f0e8; display: inline-block; margin-top: 1.5rem; padding: 1rem 1.25rem; background: #2d6bff; text-decoration: none; font-weight: 700; text-transform: uppercase; }
+      p { color: var(--page-muted); font-size: 1.125rem; line-height: 1.6; }
+      a { color: #fff; display: inline-block; margin-top: 1.5rem; padding: 1rem 1.25rem; background: var(--page-action); text-decoration: none; font-weight: 700; text-transform: uppercase; }
     </style>
   </head>
   <body>

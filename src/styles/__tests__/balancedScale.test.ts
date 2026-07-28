@@ -75,7 +75,7 @@ describe("balanced responsive scale", () => {
 
   it("shows primary framed photographs in full", () => {
     expect(base).toMatch(
-      /\.frame\s*\{[\s\S]*?background:\s*var\(--media-matte\)/,
+      /\.frame\s*\{[\s\S]*?background:\s*var\(--media-surface\)/,
     );
     expect(base).toMatch(
       /\.frame img\s*\{[\s\S]*?object-fit:\s*contain[\s\S]*?object-position:\s*center/,

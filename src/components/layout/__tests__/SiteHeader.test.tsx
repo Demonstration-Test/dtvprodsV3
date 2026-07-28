@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 import { MemoryRouter } from "react-router-dom";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { ThemeProvider } from "../../../lib/theme/ThemeProvider";
 
 const requiredMobileDestinations = [
   ["Home", "/"],
@@ -32,15 +33,25 @@ async function loadHeader() {
 }
 
 describe("site header", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    document.documentElement.dataset.theme = "dark";
+    document.documentElement.style.colorScheme = "dark";
+    document.head.innerHTML =
+      '<meta name="theme-color" content="#080808">';
+  });
+
   function renderHeader(SiteHeader: ComponentType) {
     return render(
       <MemoryRouter>
-        <SiteHeader />
-        <main id="main-content">Main content</main>
-        <footer className="site-footer">Footer content</footer>
-        <a className="sticky-book" href="/book-damon">
-          Sticky booking
-        </a>
+        <ThemeProvider>
+          <SiteHeader />
+          <main id="main-content">Main content</main>
+          <footer className="site-footer">Footer content</footer>
+          <a className="sticky-book" href="/book-damon">
+            Sticky booking
+          </a>
+        </ThemeProvider>
       </MemoryRouter>,
     );
   }
@@ -128,13 +139,22 @@ describe("site header", () => {
     const lastDestination = within(mobileNavigation).getByRole("link", {
       name: /^book damon$/i,
     });
+    const brand = screen.getByRole("link", {
+      name: /damon j\. young jr\. home/i,
+    });
 
     lastDestination.focus();
     await user.tab();
-    expect(trigger).toHaveFocus();
+    expect(brand).toHaveFocus();
 
     await user.tab({ shift: true });
     expect(lastDestination).toHaveFocus();
+
+    trigger.focus();
+    await user.tab({ shift: true });
+    expect(
+      screen.getByRole("button", { name: "Switch to light mode" }),
+    ).toHaveFocus();
   });
 
   it("closes on a same-route destination without forcing focus back to the trigger", async () => {
@@ -165,5 +185,63 @@ describe("site header", () => {
     expect(
       screen.getAllByRole("link", { name: /book damon/i })[0],
     ).toHaveAttribute("href", "/book-damon");
+  });
+
+  it("switches and remembers the complete site theme from the navbar", async () => {
+    const { SiteHeader } = await loadHeader();
+    const user = userEvent.setup();
+    renderHeader(SiteHeader);
+
+    const themeToggle = screen.getByRole("button", {
+      name: "Switch to light mode",
+    });
+    expect(themeToggle).toHaveAttribute("aria-pressed", "false");
+
+    await user.click(themeToggle);
+
+    expect(themeToggle).toHaveFocus();
+    expect(themeToggle).toHaveAccessibleName("Switch to dark mode");
+    expect(themeToggle).toHaveAttribute("aria-pressed", "true");
+    expect(document.documentElement).toHaveAttribute(
+      "data-theme",
+      "light",
+    );
+    expect(localStorage.getItem("dtv-theme")).toBe("light");
+
+    await user.click(themeToggle);
+
+    expect(themeToggle).toHaveAccessibleName("Switch to light mode");
+    expect(themeToggle).toHaveAttribute("aria-pressed", "false");
+    expect(document.documentElement).toHaveAttribute(
+      "data-theme",
+      "dark",
+    );
+    expect(localStorage.getItem("dtv-theme")).toBe("dark");
+  });
+
+  it("keeps the responsive navigation open during a theme change", async () => {
+    const { SiteHeader } = await loadHeader();
+    const user = userEvent.setup();
+    renderHeader(SiteHeader);
+
+    await user.click(
+      screen.getByRole("button", { name: /open navigation/i }),
+    );
+    const mobileNavigation = screen.getByRole("navigation", {
+      name: /mobile/i,
+    });
+
+    await user.click(
+      screen.getByRole("button", { name: "Switch to light mode" }),
+    );
+
+    expect(mobileNavigation).toBeVisible();
+    expect(
+      screen.getByRole("button", { name: /close navigation/i }),
+    ).toHaveAttribute("aria-expanded", "true");
+    expect(document.documentElement).toHaveAttribute(
+      "data-theme",
+      "light",
+    );
   });
 });

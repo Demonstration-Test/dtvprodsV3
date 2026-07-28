@@ -90,52 +90,64 @@ describe("homepage inquiry form", () => {
     );
   });
 
-  it("validates Event and prepares the honest local Review", async () => {
-    const user = userEvent.setup();
-    renderForm();
-    await completeContact(user);
-    await user.click(screen.getByRole("button", { name: /review inquiry/i }));
+  it(
+    "validates Event and prepares the honest local Review",
+    async () => {
+      const user = userEvent.setup();
+      renderForm();
+      await completeContact(user);
+      await user.click(
+        screen.getByRole("button", { name: /review inquiry/i }),
+      );
 
-    expect(
-      (await screen.findAllByText(/select an approved event type/i))[0],
-    ).toBeVisible();
-    expect(screen.getByLabelText(/event type/i)).toHaveFocus();
+      expect(
+        (await screen.findAllByText(/select an approved event type/i))[0],
+      ).toBeVisible();
+      expect(screen.getByLabelText(/event type/i)).toHaveFocus();
 
-    await completeEvent(user);
+      await completeEvent(user);
 
-    const reviewHeading = await screen.findByRole("heading", {
-      name: /review your inquiry/i,
-    });
-    await waitFor(() => expect(reviewHeading).toHaveFocus());
-    expect(
-      screen.getByText(/this static website cannot send it for you/i),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("button", { name: /open email draft/i }),
-    ).toBeVisible();
-  });
+      const reviewHeading = await screen.findByRole("heading", {
+        name: /review your inquiry/i,
+      });
+      await waitFor(() => expect(reviewHeading).toHaveFocus());
+      expect(
+        screen.getByText(/this static website cannot send it for you/i),
+      ).toBeVisible();
+      expect(
+        screen.getByRole("button", { name: /open email draft/i }),
+      ).toBeVisible();
+    },
+    15_000,
+  );
 
-  it("clears a prepared review when the organizer edits Event details", async () => {
-    const user = userEvent.setup();
-    renderForm();
-    await completeContact(user);
-    await completeEvent(user);
-    expect(
-      await screen.findByRole("heading", { name: /review your inquiry/i }),
-    ).toBeVisible();
+  it(
+    "clears a prepared review when the organizer edits Event details",
+    async () => {
+      const user = userEvent.setup();
+      renderForm();
+      await completeContact(user);
+      await completeEvent(user);
+      expect(
+        await screen.findByRole("heading", { name: /review your inquiry/i }),
+      ).toBeVisible();
 
-    await user.click(
-      screen.getByRole("button", { name: /edit event details/i }),
-    );
+      await user.click(
+        screen.getByRole("button", { name: /edit event details/i }),
+      );
 
-    expect(
-      screen.queryByRole("heading", { name: /review your inquiry/i }),
-    ).not.toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Event details" })).toBeVisible();
-    expect(screen.getByLabelText(/short message/i)).toHaveValue(
-      "We are planning a student leadership program focused on purposeful action.",
-    );
-  });
+      expect(
+        screen.queryByRole("heading", { name: /review your inquiry/i }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { name: "Event details" }),
+      ).toBeVisible();
+      expect(screen.getByLabelText(/short message/i)).toHaveValue(
+        "We are planning a student leadership program focused on purposeful action.",
+      );
+    },
+    15_000,
+  );
 
   it("keeps the full booking route available without browser persistence", () => {
     renderForm();

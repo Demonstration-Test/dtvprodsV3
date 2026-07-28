@@ -24,6 +24,238 @@ function siteRoute(route: string) {
   return `./${route.replace(/^\/+/, "")}`;
 }
 
+test("navbar theme control switches, remembers, and restores the complete site theme", async ({
+  page,
+}) => {
+  const pageErrors: string[] = [];
+  const failedRequests: string[] = [];
+  page.on("pageerror", (error) => pageErrors.push(error.message));
+  page.on("requestfailed", (request) =>
+    failedRequests.push(`${request.method()} ${request.url()}`),
+  );
+
+  await page.goto(siteRoute("/"));
+  const root = page.locator("html");
+  const themeColor = page.locator('meta[name="theme-color"]');
+  const toggle = page.locator(".site-header__theme-toggle");
+
+  await expect(root).toHaveAttribute("data-theme", "dark");
+  await expect(themeColor).toHaveAttribute("content", "#080808");
+  await expect(toggle).toHaveAccessibleName("Switch to light mode");
+  await expect(toggle).toHaveAttribute("aria-pressed", "false");
+  expect(
+    await page.evaluate(() => getComputedStyle(document.documentElement).colorScheme),
+  ).toBe("dark");
+
+  await toggle.click();
+
+  await expect(toggle).toBeFocused();
+  await expect(toggle).toHaveAccessibleName("Switch to dark mode");
+  await expect(toggle).toHaveAttribute("aria-pressed", "true");
+  await expect(root).toHaveAttribute("data-theme", "light");
+  await expect(themeColor).toHaveAttribute("content", "#f4f0e8");
+  expect(await page.evaluate(() => localStorage.getItem("dtv-theme"))).toBe(
+    "light",
+  );
+  expect(
+    await page.evaluate(() => getComputedStyle(document.documentElement).colorScheme),
+  ).toBe("light");
+
+  const lightSurfaces = await page.evaluate(() => {
+    const background = (selector: string) => {
+      const element = document.querySelector(selector);
+      return element ? getComputedStyle(element).backgroundColor : null;
+    };
+    return {
+      body: background("body"),
+      header: background(".site-header"),
+      story: background("#story"),
+      gallery: background("#gallery"),
+      inquiry: background("#inquire"),
+      footer: background(".site-footer"),
+      media: background(".home-story__frame"),
+    };
+  });
+  expect(lightSurfaces.body).toBe("rgb(244, 240, 232)");
+  expect(lightSurfaces.story).toBe("rgb(244, 240, 232)");
+  expect(lightSurfaces.gallery).toBe("rgb(244, 240, 232)");
+  expect(lightSurfaces.inquiry).toBe("rgb(244, 240, 232)");
+  expect(lightSurfaces.footer).toBe("rgb(231, 224, 213)");
+  expect(lightSurfaces.media).toBe("rgb(227, 221, 210)");
+  expect(lightSurfaces.header).not.toBe("rgb(8, 8, 8)");
+
+  const accessibility = await new AxeBuilder({ page }).analyze();
+  const seriousIssues = accessibility.violations.filter((violation) =>
+    ["serious", "critical"].includes(violation.impact ?? ""),
+  );
+  expect(seriousIssues).toEqual([]);
+
+  await page.reload();
+  await expect(root).toHaveAttribute("data-theme", "light");
+  await expect(
+    page.getByRole("button", { name: "Switch to dark mode" }),
+  ).toHaveAttribute("aria-pressed", "true");
+
+  await page.getByRole("button", { name: "Switch to dark mode" }).click();
+  await expect(root).toHaveAttribute("data-theme", "dark");
+  expect(await page.evaluate(() => localStorage.getItem("dtv-theme"))).toBe(
+    "dark",
+  );
+  expect(pageErrors).toEqual([]);
+  expect(failedRequests).toEqual([]);
+});
+
+test("saved light mode is applied before React on direct supporting routes", async ({
+  page,
+}) => {
+  await page.goto(siteRoute("/"));
+  await page.evaluate(() => localStorage.setItem("dtv-theme", "light"));
+  await page.addInitScript(() => {
+    const themeMutations: string[] = [];
+    Object.defineProperty(window, "__dtvThemeMutations", {
+      configurable: true,
+      value: themeMutations,
+    });
+    const root = document.documentElement;
+    new MutationObserver(() => {
+      themeMutations.push(root.dataset.theme ?? "");
+    }).observe(root, {
+      attributeFilter: ["data-theme"],
+      attributes: true,
+    });
+  });
+
+  for (const route of ["/about/", "/media/", "/faq/", "/book-damon/"]) {
+    await page.goto(siteRoute(route));
+    await expect(page.locator("html")).toHaveAttribute(
+      "data-theme",
+      "light",
+    );
+    await expect(
+      page.getByRole("button", { name: "Switch to dark mode" }),
+    ).toBeVisible();
+    await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute(
+      "content",
+      "#f4f0e8",
+    );
+    const mutations = await page.evaluate(
+      () =>
+        (
+          window as typeof window & {
+            __dtvThemeMutations?: string[];
+          }
+        ).__dtvThemeMutations ?? [],
+    );
+    expect(mutations).not.toContain("dark");
+
+    const accessibility = await new AxeBuilder({ page }).analyze();
+    const seriousIssues = accessibility.violations.filter((violation) =>
+      ["serious", "critical"].includes(violation.impact ?? ""),
+    );
+    expect(
+      seriousIssues,
+      `${route} should retain WCAG AA accessibility in saved light mode`,
+    ).toEqual([]);
+  }
+});
+
+test("a blocked preference write changes this visit and safely returns to dark", async ({
+  page,
+}) => {
+  await page.goto(siteRoute("/"));
+  await page.evaluate(() => {
+    localStorage.clear();
+    Storage.prototype.setItem = () => {
+      throw new DOMException("Blocked", "SecurityError");
+    };
+  });
+
+  await page
+    .getByRole("button", { name: "Switch to light mode" })
+    .click();
+  await expect(page.locator("html")).toHaveAttribute(
+    "data-theme",
+    "light",
+  );
+  expect(await page.evaluate(() => localStorage.getItem("dtv-theme"))).toBeNull();
+
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute(
+    "data-theme",
+    "dark",
+  );
+});
+
+for (const viewport of [
+  { width: 1440, height: 1000 },
+  { width: 1073, height: 427 },
+  { width: 390, height: 844 },
+]) {
+  test(`theme control fits the navbar at ${viewport.width}x${viewport.height}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport);
+    await page.goto(siteRoute("/"));
+    await page
+      .getByRole("button", { name: "Switch to light mode" })
+      .click();
+
+    const book = page.locator(".site-header__book");
+    const toggle = page.locator(".site-header__theme-toggle");
+    await expect(book).toBeVisible();
+    await expect(toggle).toBeVisible();
+    const fit = await page.evaluate(() => {
+      const header = document.querySelector(".site-header__inner");
+      const button = document.querySelector(".site-header__theme-toggle");
+      const bounds = button?.getBoundingClientRect();
+      return {
+        buttonHeight: bounds?.height,
+        buttonWidth: bounds?.width,
+        headerOverflow:
+          (header?.scrollWidth ?? 0) - (header?.clientWidth ?? 0),
+        pageOverflow:
+          document.documentElement.scrollWidth -
+          document.documentElement.clientWidth,
+      };
+    });
+    expect(fit.buttonHeight).toBeGreaterThanOrEqual(44);
+    expect(fit.buttonWidth).toBeGreaterThanOrEqual(44);
+    expect(fit.headerOverflow).toBeLessThanOrEqual(0);
+    expect(fit.pageOverflow).toBeLessThanOrEqual(0);
+  });
+}
+
+test("light-mode responsive menu stays open and keeps its scroll position", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1073, height: 427 });
+  await page.goto(siteRoute("/"));
+  await page.getByRole("button", { name: "Open navigation" }).click();
+  const navigation = page.getByRole("navigation", { name: "Mobile" });
+  await navigation.evaluate((element) => {
+    element.scrollTop = 36;
+  });
+  const scrollBefore = await navigation.evaluate(
+    (element) => element.scrollTop,
+  );
+
+  await page
+    .getByRole("button", { name: "Switch to light mode" })
+    .click();
+
+  await expect(navigation).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Close navigation" }),
+  ).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator("html")).toHaveAttribute(
+    "data-theme",
+    "light",
+  );
+  expect(
+    await navigation.evaluate((element) => element.scrollTop),
+  ).toBe(scrollBefore);
+});
+
 test("homepage interactions and accessibility stay healthy", async ({
   page,
 }) => {

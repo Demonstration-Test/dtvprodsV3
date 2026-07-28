@@ -74,6 +74,7 @@ export function EditorialPortfolio() {
 
         <div
           className="portfolio__previews"
+          role="group"
           aria-label="Gallery previews"
         >
           {category.images.length > 1

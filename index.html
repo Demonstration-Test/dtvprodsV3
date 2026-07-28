@@ -4,6 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#080808" />
+    <script data-theme-initializer>
+      (() => {
+        const root = document.documentElement;
+        const themeColor = document.querySelector('meta[name="theme-color"]');
+        let theme = "dark";
+        try {
+          if (localStorage.getItem("dtv-theme") === "light") {
+            theme = "light";
+          }
+        } catch {}
+        root.dataset.theme = theme;
+        root.style.colorScheme = theme;
+        if (themeColor) {
+          themeColor.content =
+            theme === "light" ? "#f4f0e8" : "#080808";
+        }
+      })();
+    </script>
     <meta
       name="description"
       content="Damon J. Young Jr. helps students, athletes, creatives, and organizations turn vision into disciplined action."

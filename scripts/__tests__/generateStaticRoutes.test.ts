@@ -16,6 +16,20 @@ async function loadGenerator() {
 const template = `<!doctype html>
 <html lang="en">
   <head>
+    <meta name="theme-color" content="#080808">
+    <script data-theme-initializer>
+      try {
+        const theme = localStorage.getItem("dtv-theme") === "light"
+          ? "light"
+          : "dark";
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.style.colorScheme = theme;
+        document.querySelector('meta[name="theme-color"]').content =
+          theme === "light" ? "#f4f0e8" : "#080808";
+      } catch {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
     <title>Template</title>
     <meta name="description" content="Template description">
     <link rel="canonical" href="https://example.com/">
@@ -55,6 +69,27 @@ describe("static route generation", () => {
     expect(html).toContain('"@type":"WebPage"');
   });
 
+  it.each(["/about", "/media", "/faq", "/book-damon"])(
+    "retains flash-free theme initialization for %s",
+    async (routePath) => {
+      const generator = await loadGenerator();
+      const route = routes.find((candidate) => candidate.path === routePath);
+      expect(route).toBeDefined();
+
+      const html = generator.createRouteHtml(template, route!);
+      const initializerIndex = html.indexOf("data-theme-initializer");
+      const applicationIndex = html.indexOf(
+        '<script type="module" src="/dtvprodsV3/assets/main.js">',
+      );
+
+      expect(initializerIndex).toBeGreaterThan(-1);
+      expect(applicationIndex).toBeGreaterThan(initializerIndex);
+      expect(html).toContain("dtv-theme");
+      expect(html).toContain("#080808");
+      expect(html).toContain("#f4f0e8");
+    },
+  );
+
   it("creates a true not-found document", async () => {
     const generator = await loadGenerator();
     const html = generator.createNotFoundHtml(template);
@@ -62,6 +97,9 @@ describe("static route generation", () => {
     expect(html).toContain("<title>Page Not Found | DTV</title>");
     expect(html).toContain('data-static-status="404"');
     expect(html).toContain("Page not found");
+    expect(html).toContain("data-theme-initializer");
+    expect(html).toContain("dtv-theme");
+    expect(html).toContain("#f4f0e8");
     expect(html).not.toContain("<title>Template</title>");
   });
 });

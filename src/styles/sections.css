@@ -3,8 +3,8 @@
   z-index: 110;
   top: 0;
   height: var(--header-height);
-  border-bottom: 1px solid var(--line-dark);
-  background: color-mix(in srgb, var(--lens-black) 90%, transparent);
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--header-surface);
   backdrop-filter: blur(18px);
 }
 
@@ -56,6 +56,13 @@
   font-size: 0.68rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.site-header__actions {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: 0.65rem;
 }
 
 .site-header__desktop-nav > a,
@@ -117,7 +124,6 @@
 }
 
 .site-header__book {
-  justify-self: end;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -142,6 +148,34 @@
 
 .site-header__book svg {
   width: 1.15rem;
+}
+
+.site-header__theme-toggle {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border: 1px solid var(--line-dark);
+  background: transparent;
+  color: var(--film-white);
+  cursor: pointer;
+  transition:
+    border-color 200ms,
+    background 200ms,
+    color 200ms,
+    transform 200ms;
+}
+
+.site-header__theme-toggle:hover {
+  border-color: var(--film-white);
+  background: rgba(244, 240, 232, 0.08);
+  transform: translateY(-2px);
+}
+
+.site-header__theme-toggle svg {
+  width: 1.3rem;
+  height: 1.3rem;
 }
 
 .site-header__menu-trigger,
@@ -517,6 +551,7 @@
 .story-control--active {
   border-color: var(--focus-blue);
   background: var(--focus-blue);
+  color: white;
 }
 
 .audiences__intro {
@@ -978,7 +1013,7 @@
 }
 
 .field-optional {
-  color: rgba(8, 8, 8, 0.5);
+  color: var(--steel-on-light);
   font-weight: 400;
 }
 
@@ -986,10 +1021,11 @@
 .form-field select,
 .form-field textarea {
   width: 100%;
-  border: 1px solid rgba(8, 8, 8, 0.6);
+  border: 1px solid;
+  border-color: var(--control-border);
   border-radius: 0;
-  background: rgba(255, 255, 255, 0.24);
-  color: var(--lens-black);
+  background: var(--control-surface);
+  color: var(--control-text);
 }
 
 .form-field input,
@@ -1540,7 +1576,7 @@
 
 @media (max-width: 1120px) {
   .site-header__inner {
-    grid-template-columns: 1fr auto auto;
+    grid-template-columns: 1fr auto;
   }
 
   .site-header__desktop-nav {
@@ -1552,7 +1588,7 @@
     gap: 0.4rem;
     width: 3.5rem;
     height: 3.5rem;
-    margin-left: 0.75rem;
+    margin-left: 0;
     padding: 1rem;
     border: 1px solid var(--line-dark);
     background: transparent;
@@ -1661,7 +1697,7 @@
 
 @media (max-width: 767px) {
   .site-header__inner {
-    grid-template-columns: 1fr auto auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     padding-inline: 1rem;
   }
 
@@ -1684,6 +1720,11 @@
   }
 
   .site-header__menu-trigger {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .site-header__theme-toggle {
     width: 3rem;
     height: 3rem;
   }
@@ -1956,6 +1997,31 @@
   }
 }
 
+@media (max-width: 420px) {
+  .site-header__inner {
+    padding-inline: 0.75rem;
+  }
+
+  .site-header__brand img {
+    width: 4.3rem;
+  }
+
+  .site-header__actions {
+    gap: 0.3rem;
+  }
+
+  .site-header__book {
+    min-width: 7.25rem;
+    padding-inline: 0.75rem;
+  }
+
+  .site-header__theme-toggle,
+  .site-header__menu-trigger {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+}
+
 @media (max-width: 767px) and (min-height: 560px) {
   .home-chapter:not(.hero) {
     min-height: calc(100svh - var(--mobile-header-height) - var(--mobile-booking-height));
@@ -2070,6 +2136,7 @@
 
 .home-story__control--active {
   background: var(--focus-blue);
+  color: white;
 }
 
 .portfolio__gallery {
@@ -2310,6 +2377,7 @@
 
 .plan-room__tabs button[aria-selected="true"] {
   background: var(--focus-blue);
+  color: white;
 }
 
 .plan-room__tabs strong {
@@ -3269,6 +3337,321 @@
   .story-chapters {
     grid-template-columns: 1fr;
   }
+}
+
+:root[data-theme="light"] .site-header {
+  border-color: var(--border-subtle);
+  background: var(--header-surface);
+  color: var(--text-primary);
+}
+
+:root[data-theme="light"] .site-header__brand img,
+:root[data-theme="light"] .site-footer__brand img {
+  filter: brightness(0);
+}
+
+:root[data-theme="light"] .site-header__desktop-nav > a,
+:root[data-theme="light"] .nav-audiences > summary {
+  color: color-mix(in srgb, var(--text-primary) 82%, transparent);
+}
+
+:root[data-theme="light"] .nav-audiences__menu {
+  border-color: var(--border-subtle);
+  background: var(--surface-raised);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-deep);
+}
+
+:root[data-theme="light"] .nav-audiences__menu a {
+  border-color: var(--border-subtle);
+}
+
+:root[data-theme="light"] .site-header__theme-toggle {
+  border-color: var(--control-border);
+  background: var(--control-surface);
+  color: var(--text-primary);
+}
+
+:root[data-theme="light"] .site-header__theme-toggle:hover {
+  border-color: var(--text-primary);
+  background: var(--surface-raised);
+}
+
+:root[data-theme="light"] .site-header__menu-trigger {
+  border-color: var(--control-border);
+  color: var(--text-primary);
+}
+
+:root[data-theme="light"] .site-header__menu-trigger span {
+  background: var(--text-primary);
+}
+
+:root[data-theme="light"] .mobile-navigation {
+  background:
+    linear-gradient(
+      rgba(244, 240, 232, 0.94),
+      rgba(244, 240, 232, 0.98)
+    ),
+    url("/dtvprodsV3/media/textures/cinematic-aperture-960.webp") center /
+      cover;
+  color: var(--text-primary);
+  background-blend-mode: screen;
+}
+
+:root[data-theme="light"] .mobile-navigation__group-label {
+  color: var(--text-secondary);
+}
+
+:root[data-theme="light"] .mobile-navigation__group > a {
+  border-color: var(--border-subtle);
+}
+
+:root[data-theme="light"] .hero {
+  border-color: var(--border-subtle);
+  background:
+    radial-gradient(
+      circle at 70% 42%,
+      rgba(108, 36, 159, 0.11),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 68% 48%,
+      #e7e0d5 0,
+      var(--surface-page) 48%
+    );
+  color: var(--text-primary);
+}
+
+:root[data-theme="light"] .hero::before {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(244, 240, 232, 0.98) 0%,
+      rgba(244, 240, 232, 0.88) 38%,
+      rgba(244, 240, 232, 0.34) 70%,
+      rgba(244, 240, 232, 0.72) 100%
+    ),
+    url("/dtvprodsV3/media/textures/cinematic-aperture-1600.webp") center /
+      cover;
+  opacity: 0.44;
+  background-blend-mode: screen;
+}
+
+:root[data-theme="light"] .hero-lens {
+  opacity: 0.2;
+  mix-blend-mode: multiply;
+}
+
+:root[data-theme="light"] .hero__motion-toggle {
+  border-color: var(--control-border);
+  background: color-mix(
+    in srgb,
+    var(--control-surface) 84%,
+    transparent
+  );
+  color: var(--text-primary);
+}
+
+:root[data-theme="light"] .hero__label,
+:root[data-theme="light"] .hero__meta {
+  color: var(--text-secondary);
+}
+
+:root[data-theme="light"] .hero .display--hero {
+  color: var(--text-primary);
+  text-shadow: 0 10px 50px rgba(48, 39, 27, 0.18);
+}
+
+:root[data-theme="light"] .section--dark .section-label {
+  color: var(--dtv-purple);
+}
+
+:root[data-theme="light"] .frame__caption,
+:root[data-theme="light"] .home-story__frame figcaption,
+:root[data-theme="light"] .portfolio__preview .camera-meta,
+:root[data-theme="light"] .contact-sheet figcaption {
+  background: rgba(244, 240, 232, 0.9);
+  color: var(--text-primary);
+}
+
+:root[data-theme="light"] .motion-story__texture {
+  opacity: 0.08;
+  mix-blend-mode: multiply;
+}
+
+:root[data-theme="light"] .motion-story__statement,
+:root[data-theme="light"] .portfolio__grid figcaption,
+:root[data-theme="light"] .portfolio__feature figcaption {
+  background: var(--control-surface);
+  color: var(--text-primary);
+}
+
+:root[data-theme="light"] .audiences__focus-copy {
+  background: var(--surface-raised);
+  color: var(--text-primary);
+}
+
+:root[data-theme="light"] .motion-story__heading > p:last-child,
+:root[data-theme="light"] .audiences__focus-copy p,
+:root[data-theme="light"] .dtv-story__copy > p:not(.section-label),
+:root[data-theme="light"] .takeaways__intro,
+:root[data-theme="light"] .booking-process__steps p,
+:root[data-theme="light"] .audience-link-grid p,
+:root[data-theme="light"] .page-hero__copy .body-large,
+:root[data-theme="light"] .plan-room__steps p,
+:root[data-theme="light"] .plan-room .faq-item [id^="plan-faq-panel"] p {
+  color: var(--text-secondary);
+}
+
+:root[data-theme="light"] .audiences__index,
+:root[data-theme="light"] .dtv-story__timeline span {
+  color: var(--dtv-purple);
+}
+
+:root[data-theme="light"] .takeaways__list li > span {
+  color: var(--focus-blue);
+}
+
+:root[data-theme="light"] .booking-process__steps li > span {
+  color: var(--dtv-purple);
+}
+
+:root[data-theme="light"] .portfolio__preview {
+  background: var(--media-surface);
+}
+
+:root[data-theme="light"] .form-field input {
+  border-color: var(--control-border);
+  background: var(--control-surface);
+  color: var(--control-text);
+  color-scheme: light;
+}
+
+:root[data-theme="light"] .form-field select {
+  border-color: var(--control-border);
+  background: var(--control-surface);
+  color: var(--control-text);
+  color-scheme: light;
+}
+
+:root[data-theme="light"] .form-field textarea {
+  border-color: var(--control-border);
+  background: var(--control-surface);
+  color: var(--control-text);
+  color-scheme: light;
+}
+
+:root[data-theme="light"] .form-field input::placeholder,
+:root[data-theme="light"] .form-field textarea::placeholder {
+  color: var(--text-secondary);
+  opacity: 1;
+}
+
+:root[data-theme="light"] .form-field select option {
+  background: var(--control-surface);
+  color: var(--control-text);
+}
+
+:root[data-theme="light"] .form-field input:disabled,
+:root[data-theme="light"] .form-field select:disabled,
+:root[data-theme="light"] .form-field textarea:disabled {
+  border-color: var(--border-subtle);
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  opacity: 1;
+}
+
+:root[data-theme="light"] .form-field input:-webkit-autofill,
+:root[data-theme="light"] .form-field input:-webkit-autofill:hover,
+:root[data-theme="light"] .form-field input:-webkit-autofill:focus {
+  box-shadow: 0 0 0 1000px var(--control-surface) inset;
+  -webkit-text-fill-color: var(--control-text);
+}
+
+:root[data-theme="light"] .field-error {
+  color: #991b1b;
+}
+
+:root[data-theme="light"] .form-disclosure {
+  border-color: var(--border-subtle);
+  color: var(--text-secondary);
+}
+
+:root[data-theme="light"] .inquiry-review {
+  border-color: var(--border-subtle);
+  background: var(--control-surface);
+  color: var(--text-primary);
+}
+
+:root[data-theme="light"] .inquiry-review pre {
+  border-color: var(--border-subtle);
+  background: var(--surface-raised);
+  color: var(--text-primary);
+}
+
+:root[data-theme="light"] .final-cta::before,
+:root[data-theme="light"] .page-hero::before {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(244, 240, 232, 0.98) 0%,
+      rgba(244, 240, 232, 0.86) 48%,
+      rgba(244, 240, 232, 0.26) 100%
+    ),
+    url("/dtvprodsV3/media/textures/cinematic-aperture-1600.webp") center /
+      cover;
+  opacity: 0.58;
+  background-blend-mode: screen;
+}
+
+:root[data-theme="light"] .site-footer {
+  border-color: var(--border-subtle);
+  background: var(--surface-raised);
+  color: var(--text-primary);
+}
+
+:root[data-theme="light"] .site-footer__brand p,
+:root[data-theme="light"] .site-footer a,
+:root[data-theme="light"] .site-footer span {
+  color: var(--text-secondary);
+}
+
+:root[data-theme="light"] .site-footer .section-label {
+  color: var(--dtv-purple);
+}
+
+:root[data-theme="light"] .site-footer__meta {
+  border-color: var(--border-subtle);
+}
+
+:root[data-theme="light"] .focus-cursor {
+  background: var(--control-surface);
+  color: var(--text-primary);
+}
+
+:root[data-theme="light"] .home-chapter-nav ol {
+  border-color: var(--border-subtle);
+  background: rgba(244, 240, 232, 0.84);
+  box-shadow: 0 0.6rem 2rem rgba(48, 39, 27, 0.16);
+}
+
+:root[data-theme="light"] .home-chapter-nav a {
+  color: var(--text-secondary);
+}
+
+:root[data-theme="light"] .home-chapter-nav a[aria-current="location"] {
+  color: var(--text-primary);
+}
+
+:root[data-theme="light"] .audiences__focus::after {
+  background: linear-gradient(
+    transparent,
+    rgba(244, 240, 232, 0.96)
+  );
+}
+
+:root[data-theme="light"] .audiences__focus-copy {
+  color: var(--text-primary);
 }
 
 @media (prefers-reduced-motion: reduce) {

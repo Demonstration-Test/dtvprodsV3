@@ -5,13 +5,20 @@ import {
   navigation,
 } from "../../content/navigation";
 import { assetUrl } from "../../lib/assets";
-import { ArrowRightIcon } from "../ui/Icons";
+import { useTheme } from "../../lib/theme/ThemeProvider";
+import {
+  ArrowRightIcon,
+  MoonIcon,
+  SunIcon,
+} from "../ui/Icons";
 
 type InertElement = HTMLElement & { inert: boolean };
 
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
   const location = useLocation();
+  const siteHeaderRef = useRef<HTMLElement>(null);
   const menuTriggerRef = useRef<HTMLButtonElement>(null);
   const mobileNavigationRef = useRef<HTMLElement>(null);
 
@@ -64,25 +71,35 @@ export function SiteHeader() {
 
       if (event.key !== "Tab") return;
 
-      const trigger = menuTriggerRef.current;
       const links = Array.from(
         mobileNavigationRef.current?.querySelectorAll<HTMLAnchorElement>(
           "a[href]",
         ) ?? [],
       );
-      if (!trigger || links.length === 0) return;
+      const headerControls = Array.from(
+        siteHeaderRef.current?.querySelectorAll<HTMLElement>(
+          [
+            ".site-header__brand",
+            ".site-header__book",
+            ".site-header__theme-toggle",
+            ".site-header__menu-trigger",
+          ].join(","),
+        ) ?? [],
+      );
+      const focusableElements = [...headerControls, ...links];
+      if (focusableElements.length === 0) return;
 
-      const lastLink = links.at(-1);
-      if (event.shiftKey && document.activeElement === trigger && lastLink) {
-        event.preventDefault();
-        lastLink.focus();
-      } else if (
-        !event.shiftKey &&
-        document.activeElement === lastLink
-      ) {
-        event.preventDefault();
-        trigger.focus();
-      }
+      const activeIndex = focusableElements.indexOf(
+        document.activeElement as HTMLElement,
+      );
+      if (activeIndex === -1) return;
+
+      event.preventDefault();
+      const offset = event.shiftKey ? -1 : 1;
+      const nextIndex =
+        (activeIndex + offset + focusableElements.length) %
+        focusableElements.length;
+      focusableElements[nextIndex]?.focus();
     };
 
     document.addEventListener("keydown", handleKeyDown);
@@ -106,7 +123,7 @@ export function SiteHeader() {
 
   return (
     <>
-      <header className="site-header">
+      <header ref={siteHeaderRef} className="site-header">
         <div className="site-header__inner">
           <Link
             className="site-header__brand"
@@ -146,25 +163,41 @@ export function SiteHeader() {
             )}
           </nav>
 
-          <Link className="site-header__book" to="/book-damon">
-            <span>Book Damon</span>
-            <ArrowRightIcon />
-          </Link>
+          <div className="site-header__actions">
+            <Link className="site-header__book" to="/book-damon">
+              <span>Book Damon</span>
+              <ArrowRightIcon />
+            </Link>
 
-          <button
-            ref={menuTriggerRef}
-            className="site-header__menu-trigger"
-            type="button"
-            aria-label={
-              menuOpen ? "Close navigation" : "Open navigation"
-            }
-            aria-expanded={menuOpen}
-            aria-controls="mobile-navigation"
-            onClick={() => setMenuOpen((open) => !open)}
-          >
-            <span />
-            <span />
-          </button>
+            <button
+              className="site-header__theme-toggle"
+              type="button"
+              aria-label={
+                theme === "dark"
+                  ? "Switch to light mode"
+                  : "Switch to dark mode"
+              }
+              aria-pressed={theme === "light"}
+              onClick={toggleTheme}
+            >
+              {theme === "dark" ? <SunIcon /> : <MoonIcon />}
+            </button>
+
+            <button
+              ref={menuTriggerRef}
+              className="site-header__menu-trigger"
+              type="button"
+              aria-label={
+                menuOpen ? "Close navigation" : "Open navigation"
+              }
+              aria-expanded={menuOpen}
+              aria-controls="mobile-navigation"
+              onClick={() => setMenuOpen((open) => !open)}
+            >
+              <span />
+              <span />
+            </button>
+          </div>
         </div>
       </header>
       {menuOpen ? (
